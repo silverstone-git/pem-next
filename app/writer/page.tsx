@@ -4,12 +4,19 @@ const writerPage = async () => {
   // this is the writer page, auth the guy and let him
   // ask the guy for the md file and it'll upload
   const session = await auth();
-  if (session) {
+  if (session?.user?.email === "silverstone965@gmail.com") {
     return (
       <div>
         <div>
-          Hi {session.user?.name}, we will now check if you are a writer or not
+          Hi writer upload article here ----
+          <input type="text" />
         </div>
+      </div>
+    );
+  } else if (session?.user) {
+    return (
+      <div>
+        <div>Write to silverstone965@gmail.com to collaborate</div>
       </div>
     );
   } else {
