@@ -32,10 +32,14 @@ const LoginButton = () => {
 
 const HeaderBar = () => {
   const session = useSession();
+  const router = useRouter();
   return (
     <div>
       <div className="h-16 dark:bg-zinc-900 bg-zinc-100 flex items-center justify-between w-full dark:text-zinc-100 text-zinc-900 px-4">
-        <div className="font-whisper text-3xl font-extrabold">
+        <div
+          onClick={() => router.push("/")}
+          className="font-whisper hover:cursor-pointer text-3xl font-extrabold"
+        >
           Please Explain Me!
         </div>
         <div className="flex gap-4 items-center">

@@ -1,4 +1,5 @@
 import { auth } from "../auth";
+import SubmissionComponent from "./_components/submission";
 
 const writerPage = async () => {
   // this is the writer page, auth the guy and let him
@@ -6,11 +7,8 @@ const writerPage = async () => {
   const session = await auth();
   if (session?.user?.email === "silverstone965@gmail.com") {
     return (
-      <div>
-        <div>
-          Hi writer upload article here ----
-          <input type="text" />
-        </div>
+      <div className="p-4">
+        <SubmissionComponent></SubmissionComponent>
       </div>
     );
   } else if (session?.user) {
