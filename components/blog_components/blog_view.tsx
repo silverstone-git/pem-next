@@ -9,11 +9,8 @@ const BlogView = (props: {
 }) => {
   const htmlString = marked.parse(props.blog.content);
   return (
-    <div>
-      <p>
-        welcome {props.session.user?.name} This is id page: {props.passedId}
-      </p>
-      <div>
+    <div className="p-4 pl-6">
+      <div className="blog-view-div">
         <div className="italic font-bold my-6">
           {" "}
           Written by {props.blog.name} on{" "}

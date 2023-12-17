@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  .blog-view-div p {
+    @apply text-lg;
+  }
+  .blog-view-div ul {
+    @apply list-disc;
+  }
+  .blog-view-div h1 {
+    @apply text-3xl mt-7 mb-3 hover:text-green-500 hover:italic;
+  }
+  .blog-view-div li {
+    @apply text-lg;
+  }
+  .blog-view-div code {
+    @apply font-bold bg-zinc-200 dark:bg-zinc-700 rounded-md my-4 block w-fit py-2 px-4;
+  }
+}
+
+/*
+.blog-view-div p {
+  color: green;
+}
+*/
