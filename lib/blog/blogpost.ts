@@ -1,6 +1,7 @@
 "use server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { Blog, parseObjToBlog } from "../models";
 
 export const submitBlogToDB = async (
   user: { name: string; email: string },
@@ -29,16 +30,33 @@ export const submitBlogToDB = async (
   }
 };
 
-export const getLatestBlogs = async () => {
+export const getLatestBlogs: () => Promise<Blog[]> = async () => {
   // fetches latest 5 blogs from mongo
   const client = await clientPromise;
   try {
     const db = client.db("pem");
     const cur = db.collection("blogs").find({}).sort({ _id: 1 }).limit(5);
-    const resArray = await cur.toArray();
+    const resArray: Blog[] = [];
+
+    //
+    // TODO: we ought to do this in models but it memoizes the result, resulting in duplication
+    //
+    for await (const doc of cur) {
+      resArray.push({
+        id: doc["_id"].toString(),
+        name: doc["name"],
+        email: doc["email"],
+        content: doc["content"],
+        dateAdded: doc["dateAdded"],
+        category: doc["category"],
+      });
+    }
+    //console.log("\narray end => \n");
+    //console.log(resArray);
     return resArray;
   } catch (e) {
     console.log("error is: ", e);
+    return [];
   }
 };
 

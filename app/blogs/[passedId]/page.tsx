@@ -12,6 +12,12 @@ const IdPage = async ({ params }: { params: { passedId: string } }) => {
   const res = await getBlogById(params.passedId);
   if (res) {
     blog = parseObjToBlog(res);
+  } else {
+    return (
+      <div className="flex h-[85vh] w-full justify-center items-center font-bold text-2xl">
+        404 | Not Found
+      </div>
+    );
   }
   if (session?.user) {
     return (
