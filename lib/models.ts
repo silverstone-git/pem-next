@@ -3,6 +3,7 @@ export interface Blog {
   content: string;
   name: string;
   email: string;
+  category: string;
   dateAdded: Date;
 }
 
@@ -11,6 +12,7 @@ export const initBlog: Blog = {
   content: "",
   name: "",
   email: "",
+  category: "",
   dateAdded: new Date(),
 };
 
@@ -20,6 +22,7 @@ export function parseObjToBlog(el: any) {
   blog.email = el["email"];
   blog.content = el["content"];
   blog.dateAdded = el["dateAdded"];
+  blog.category = el["category"];
   blog.id = el["_id"].toString();
   return blog;
 }

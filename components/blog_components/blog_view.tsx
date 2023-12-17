@@ -8,7 +8,7 @@ const BlogView = (props: {
   passedId: string;
 }) => {
   const htmlString = marked.parse(props.blog.content);
-  console.log(htmlString);
+  //console.log(htmlString);
   return (
     <div className="flex flex-col items-center">
       <div className="w-full md:w-11/12 lg:w-2/3 blog-view-div">

@@ -3,8 +3,9 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 export const submitBlogToDB = async (
-  user: { name: String; email: String },
-  blogContent: String
+  user: { name: string; email: string },
+  blogContent: string,
+  blogCategory: string
 ) => {
   // auth and then send it to db
   const client = await clientPromise;
@@ -15,6 +16,7 @@ export const submitBlogToDB = async (
       name: user.name,
       email: user.email,
       content: blogContent,
+      category: blogCategory,
       dateAdded: new Date(),
     });
     console.log("inserted \\/");

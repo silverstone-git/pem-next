@@ -1,12 +1,10 @@
-"use client";
-
-import { useSession } from "next-auth/react";
+import { auth } from "@/app/auth";
 import { ModeToggle } from "./shadcn-buttons/mode-toggle";
 import { Button } from "./ui/button";
+import Link from "next/link";
 import { LogoutAction } from "./auth-actions";
-import { useRouter } from "next/navigation";
 
-const LogoutButton = () => {
+const LogoutButton = async () => {
   return (
     <div>
       <form action={LogoutAction}>
@@ -17,36 +15,29 @@ const LogoutButton = () => {
 };
 
 const LoginButton = () => {
-  const router = useRouter();
   return (
-    <Button
-      variant={"outline"}
-      onClick={() => {
-        router.replace("/api/auth/signin");
-      }}
-    >
-      Sign In
-    </Button>
+    <Link href={"/api/auth/signin"}>
+      <Button variant={"outline"}>Sign In</Button>
+    </Link>
   );
 };
 
-const HeaderBar = () => {
-  const session = useSession();
-  const router = useRouter();
+const HeaderBar = async () => {
+  const session = await auth();
   return (
     <div>
       <div className="h-16 dark:bg-zinc-900 bg-zinc-100 flex items-center justify-between w-full dark:text-zinc-100 text-zinc-900 px-4">
-        <div
-          onClick={() => router.push("/")}
+        <Link
+          href={"/"}
           className="font-whisper hover:cursor-pointer text-3xl font-extrabold hover:text-pink-500"
         >
           Please Explain Me!
-        </div>
+        </Link>
         <div className="flex gap-4 items-center">
           <div>
             <ModeToggle></ModeToggle>
           </div>
-          <div>{session.data?.user ? <LogoutButton /> : <LoginButton />}</div>
+          <div>{session?.user ? <LogoutButton /> : <LoginButton />}</div>
         </div>
       </div>
     </div>

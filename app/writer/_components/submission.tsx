@@ -1,12 +1,13 @@
 "use client";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { MutableRefObject, useState } from "react";
 import { submitBlogToDB } from "@/lib/blog/blogpost";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const SubmissionComponent = () => {
   const [fileStr, setFileStr] = useState("");
+  const [category, setCatgory] = useState("");
   const session = useSession();
   const router = useRouter();
   const userObj = {
@@ -42,7 +43,6 @@ const SubmissionComponent = () => {
   */
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    //
     if (e.target.files == null) return;
     const fileList = Array.from(e.target.files);
     const file = fileList[0];
@@ -50,27 +50,51 @@ const SubmissionComponent = () => {
     reader.readAsText(file);
     reader.onloadend = () => {
       if (reader.result == null) return;
-      console.log("text is: ", reader.result.slice(1, 20), "...");
       // send this to serber
       setFileStr(reader.result.toString());
     };
   };
 
   return (
-    <div>
-      Hi writer upload article here
+    <div className="h-[85vh] w-full flex justify-center items-center">
       <div className="flex flex-col gap-4 w-[50%]">
-        <input onChange={handleFile} type="file"></input>
-        <Button
-          onClick={() => {
-            submitBlogToDB(userObj, fileStr).then(() => {
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={() => {
+            submitBlogToDB(userObj, fileStr, category).then(() => {
               console.log("blog submitted successffully!");
-              router.push("/");
+              router.replace("/");
             });
           }}
         >
-          Submit blog
-        </Button>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="file-picker-blog-markdown">
+              Choose a Blog Markdown File
+            </label>
+            <input
+              className="bg-zinc-200 dark:bg-zinc-800"
+              id="file-picker-blog-markdown"
+              onChange={handleFile}
+              type="file"
+              required
+            ></input>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="blog-category-input-field">
+              Write down a category for this article
+            </label>
+            <input
+              className="bg-zinc-200 dark:bg-zinc-800"
+              id="blog-category-input-field"
+              onChange={(event) => {
+                setCatgory(event.target.value.trim());
+              }}
+              type="text"
+              required
+            ></input>
+          </div>
+          <Button type="submit">Submit blog</Button>
+        </form>
       </div>
     </div>
   );
