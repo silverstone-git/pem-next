@@ -4,14 +4,18 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 
 const BlogCardLanding = (props: { key: string; blog: Blog }) => {
+  const title = props.blog.content.match(/^#.*/gm);
+  var titleString: string = "";
+  if (title != null && title instanceof Array) {
+    console.log("found the title:");
+    titleString = title[0].toString().trim().slice(1).trim();
+    console.log(titleString);
+  }
   return (
-    <div className="flex flex-col bg-zinc-200 dark:bg-zinc-800">
-      <div>
-        Written by {props.blog.name} at{" "}
-        {props.blog.dateAdded.toISOString().slice(0, 10)}
-      </div>
-      <div>{`${props.blog.content.slice(0, 20)}...`}</div>
-      <Link href={`/blogs/${props.blog.id}`}>
+    <div className="flex flex-col">
+      <div className="text-2xl font-bold mb-2">{titleString}</div>
+      <div>{`${props.blog.content.slice(0, 400)}...`}</div>
+      <Link className="mt-2" href={`/blogs/${props.blog.id}`}>
         <Button>Read Further</Button>
       </Link>
     </div>

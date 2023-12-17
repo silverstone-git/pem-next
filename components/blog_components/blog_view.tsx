@@ -9,8 +9,8 @@ const BlogView = (props: {
 }) => {
   const htmlString = marked.parse(props.blog.content);
   return (
-    <div className="p-4 pl-6">
-      <div className="blog-view-div">
+    <div className="flex flex-col items-center">
+      <div className="w-full md:w-11/12 lg:w-2/3 blog-view-div">
         <div className="italic font-bold my-6">
           {" "}
           Written by {props.blog.name} on{" "}

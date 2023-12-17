@@ -9,8 +9,11 @@
   .blog-view-div ul {
     @apply list-disc;
   }
+  .blog-view-div h2 {
+    @apply text-3xl mt-7 mb-3 hover:text-pink-500;
+  }
   .blog-view-div h1 {
-    @apply text-3xl mt-7 mb-3 hover:text-green-500 hover:italic;
+    @apply text-5xl mt-7 mb-3 hover:text-pink-500;
   }
   .blog-view-div li {
     @apply text-lg;

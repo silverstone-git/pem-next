@@ -18,10 +18,11 @@ const LandingPage = async () => {
   }
 
   return (
-    <div className="text-xl p-8">
-      This is the landing page, I will explain what it all is in a jiffy <br />
-      Recent Blogs -
-      <div className="flex flex-col">
+    <div className="text-xl p-8 flex flex-col items-center">
+      <div className="w-full md:w-11/12 lg:w-2/3 text-lg py-4 text-pink-700 dark:text-pink-300">
+        RECENT BLOGS
+      </div>
+      <div className="flex flex-col gap-8 w-11/12  md:w-2/3">
         {blogs.map((blog) => {
           // return each blog div here
           return <BlogCardLanding key={blog.id} blog={blog}></BlogCardLanding>;
