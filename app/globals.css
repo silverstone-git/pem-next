@@ -9,6 +9,14 @@
   .blog-view-div ul {
     @apply list-disc;
   }
+  .blog-view-div ul > li > ul {
+    margin-left: 15px;
+    list-style-type: circle;
+  }
+  .blog-view-div ul > li > ul > li > ul {
+    margin-left: 30px;
+    list-style-type: square;
+  }
   .blog-view-div h2 {
     @apply text-3xl mt-7 mb-3 hover:text-pink-500;
   }

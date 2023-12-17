@@ -38,7 +38,7 @@ const HeaderBar = () => {
       <div className="h-16 dark:bg-zinc-900 bg-zinc-100 flex items-center justify-between w-full dark:text-zinc-100 text-zinc-900 px-4">
         <div
           onClick={() => router.push("/")}
-          className="font-whisper hover:cursor-pointer text-3xl font-extrabold"
+          className="font-whisper hover:cursor-pointer text-3xl font-extrabold hover:text-pink-500"
         >
           Please Explain Me!
         </div>
