@@ -1,6 +1,8 @@
 import { getLatestBlogs } from "@/lib/blog/blogpost";
 import BlogCardLanding from "./blog_components/blog_card";
 import { Blog } from "@/lib/models";
+import { Suspense } from "react";
+import Loading from "./loading_landing_cards";
 
 const BlogCards = (props: { blogs: Blog[] }) => {
   return (
@@ -9,10 +11,14 @@ const BlogCards = (props: { blogs: Blog[] }) => {
         RECENT BLOGS
       </div>
       <div className="flex flex-col gap-8 w-11/12  md:w-2/3">
-        {props.blogs.map((blog: Blog) => {
-          // return each blog div here
-          return <BlogCardLanding key={blog.id} blog={blog}></BlogCardLanding>;
-        })}
+        <Suspense fallback={<Loading />}>
+          {props.blogs.map((blog: Blog) => {
+            // return each blog div here
+            return (
+              <BlogCardLanding key={blog.id} blog={blog}></BlogCardLanding>
+            );
+          })}
+        </Suspense>
       </div>
     </div>
   );

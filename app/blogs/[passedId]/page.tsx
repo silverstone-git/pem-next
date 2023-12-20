@@ -9,6 +9,7 @@ const IdPage = async ({ params }: { params: { passedId: string } }) => {
   // on the basis of this id, we fetch a post from fetch api
   const session = await auth();
   var blog: Blog = initBlog;
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
   const res = await getBlogById(params.passedId);
   if (res) {
     blog = parseObjToBlog(res);

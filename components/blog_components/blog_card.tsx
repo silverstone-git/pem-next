@@ -2,7 +2,8 @@ import { Blog } from "@/lib/models";
 import { Button } from "../ui/button";
 import Link from "next/link";
 
-const BlogCardLanding = (props: { blog: Blog }) => {
+const BlogCardLanding = async (props: { blog: Blog }) => {
+  //await new Promise((resolve) => setTimeout(resolve, 3000));
   const title = props.blog.content.match(/^#.*/gm);
   var titleString: string = "";
   if (title != null && title instanceof Array) {
