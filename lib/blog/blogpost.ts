@@ -71,3 +71,14 @@ export const getBlogById = async (id: string) => {
     console.log("error is: ", e);
   }
 };
+
+export const deleteBlogById = async (id: string) => {
+  // deletes the article by id
+  const client = await clientPromise;
+  try {
+    const db = client.db("pem");
+    db.collection("blogs").deleteOne({ _id: new ObjectId(id) });
+  } catch (e) {
+    console.log("there was an error doing all that");
+  }
+};

@@ -5,8 +5,13 @@ import { Blog, categories } from "@/lib/models";
 import { Suspense, useState } from "react";
 import Loading from "./loading_landing_cards";
 import { Badge } from "./ui/badge";
+import LoadingBlogPage from "./loading_blog_page";
 
-const BlogCards = (props: { blogs: Blog[]; showCategory: string }) => {
+const BlogCards = (props: {
+  blogs: Blog[];
+  showCategory: string;
+  setLoadingBlog: any;
+}) => {
   return (
     <div className="w-full md:w-1/2 lg:w-6/12 text-xl flex flex-col items-center">
       <div className="text-lg py-4 text-pink-700 dark:text-pink-300">
@@ -26,7 +31,10 @@ const BlogCards = (props: { blogs: Blog[]; showCategory: string }) => {
                     : "hidden"
                 } `}
               >
-                <BlogCardLanding blog={blog}></BlogCardLanding>
+                <BlogCardLanding
+                  blog={blog}
+                  setLoadingBlog={props.setLoadingBlog}
+                ></BlogCardLanding>
               </div>
             );
           })}
@@ -68,10 +76,17 @@ const LandingPage = (props: { res: Blog[] }) => {
   // fetch data just by calling and awaiting a function
 
   const [selectedCategory, setCategory] = useState("*");
+  const [loadingBlog, setLoadingBlog] = useState(false);
 
-  return (
+  return loadingBlog ? (
+    <LoadingBlogPage />
+  ) : (
     <div className="flex flex-col md:flex-row justify-normal md:justify-center gap-16 md:gap-4 pt-16">
-      <BlogCards blogs={props.res} showCategory={selectedCategory} />
+      <BlogCards
+        blogs={props.res}
+        showCategory={selectedCategory}
+        setLoadingBlog={setLoadingBlog}
+      />
       <div className="w-full md:w-1/3 lg:w-3/12">
         <div className="text-pink-700 dark:text-pink-300 py-4">
           TOP CATEGORIES

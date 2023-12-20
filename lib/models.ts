@@ -35,4 +35,5 @@ export const categories = [
   "philosophy",
   "culture",
   "history",
+  "maths",
 ];

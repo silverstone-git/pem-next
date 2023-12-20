@@ -69,7 +69,7 @@ const SubmissionComponent = () => {
         >
           <div className="flex flex-col gap-2">
             <label htmlFor="file-picker-blog-markdown">
-              Choose a Blog Markdown File
+              Choose a Blog File (.md)
             </label>
             <input
               className="bg-zinc-200 dark:bg-zinc-800"

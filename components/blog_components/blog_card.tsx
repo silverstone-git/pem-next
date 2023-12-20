@@ -1,11 +1,12 @@
 import { Blog } from "@/lib/models";
 import { Button } from "../ui/button";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const BlogCardLanding = async (props: { blog: Blog }) => {
+const BlogCardLanding = async (props: { blog: Blog; setLoadingBlog: any }) => {
   //await new Promise((resolve) => setTimeout(resolve, 3000));
   const title = props.blog.content.match(/^#.*/gm);
   var titleString: string = "";
+  const router = useRouter();
   if (title != null && title instanceof Array) {
     //console.log("found the title:");
     titleString = title[0].toString().trim().slice(1).trim();
@@ -17,9 +18,15 @@ const BlogCardLanding = async (props: { blog: Blog }) => {
       <div>{`${props.blog.content
         .slice(0, 400)
         .replace(/[^A-Za-z0-9]/g, " ")}...`}</div>
-      <Link className="mt-4" href={`/blogs/${props.blog.id}`}>
+      <div
+        className="mt-4"
+        onClick={() => {
+          router.replace(`/blogs/${props.blog.id}`);
+          props.setLoadingBlog(true);
+        }}
+      >
         <Button>Read Further</Button>
-      </Link>
+      </div>
     </div>
   );
 };

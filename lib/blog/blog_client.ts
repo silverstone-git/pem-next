@@ -1,4 +1,8 @@
 "use client";
+
+import {ObjectId} from "mongodb";
+import clientPromise from "../mongodb";
+
 export function refreshLocal(resArray: any[]) {
   if (typeof window === "undefined") return;
   console.log("so the code is being run on the client");
@@ -18,3 +22,4 @@ export function refreshLocal(resArray: any[]) {
     localStorage.setItem("blogs", JSON.stringify([...newBlogObjects]));
   }
 }
+
