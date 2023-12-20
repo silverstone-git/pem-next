@@ -26,3 +26,13 @@ export function parseObjToBlog(el: any) {
   blog.id = el["_id"].toString();
   return blog;
 }
+
+export const categories = [
+  "webdev",
+  "android",
+  "physics",
+  "space",
+  "philosophy",
+  "culture",
+  "history",
+];

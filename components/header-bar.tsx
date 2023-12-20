@@ -29,7 +29,7 @@ const HeaderBar = async () => {
       <div className="h-16 dark:bg-zinc-900 bg-zinc-100 flex items-center justify-between w-full dark:text-zinc-100 text-zinc-900 px-4">
         <Link
           href={"/"}
-          className="font-whisper hover:cursor-pointer text-3xl font-extrabold hover:text-pink-500"
+          className="font-whisper hover:cursor-pointer text-3xl font-extrabold hover:dark:text-pink-300 hover:text-pink-700"
         >
           Please Explain Me!
         </Link>

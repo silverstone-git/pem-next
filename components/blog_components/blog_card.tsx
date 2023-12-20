@@ -13,11 +13,11 @@ const BlogCardLanding = async (props: { blog: Blog }) => {
   }
   return (
     <div className="flex flex-col">
-      <div className="text-2xl font-bold mb-2">{titleString}</div>
+      <div className="text-2xl font-bold mb-4">{titleString}</div>
       <div>{`${props.blog.content
         .slice(0, 400)
         .replace(/[^A-Za-z0-9]/g, " ")}...`}</div>
-      <Link className="mt-2" href={`/blogs/${props.blog.id}`}>
+      <Link className="mt-4" href={`/blogs/${props.blog.id}`}>
         <Button>Read Further</Button>
       </Link>
     </div>

@@ -1,8 +1,12 @@
 import LandingPage from "@/components/landing-page";
+import { getLatestBlogs } from "@/lib/blog/blogpost";
+import { Blog } from "@/lib/models";
 export default async function Home() {
+  const res: Blog[] = await getLatestBlogs();
+
   return (
     <div>
-      <LandingPage></LandingPage>
+      <LandingPage res={res}></LandingPage>
     </div>
   );
 }
