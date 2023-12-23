@@ -1,7 +1,7 @@
 "use server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-import { Blog, parseObjToBlog } from "../models";
+import { Blog, pageLengthLanding, parseObjToBlog } from "../models";
 
 export const submitBlogToDB = async (
   user: { name: string; email: string },
@@ -30,12 +30,27 @@ export const submitBlogToDB = async (
   }
 };
 
-export const getLatestBlogs: () => Promise<Blog[]> = async () => {
+export const getLatestBlogs: (
+  lastBlogId: string | null
+) => Promise<Blog[]> = async (lastBlogId: string | null = "0") => {
   // fetches latest 5 blogs from mongo
   const client = await clientPromise;
   try {
     const db = client.db("pem");
-    const cur = db.collection("blogs").find({}).sort({ _id: 1 }).limit(5);
+    let cur;
+    if (lastBlogId == null) {
+      cur = db
+        .collection("blogs")
+        .find({})
+        .sort({ _id: 1 })
+        .limit(pageLengthLanding);
+    } else {
+      cur = db
+        .collection("blogs")
+        .find({ _id: { $gt: new ObjectId(lastBlogId) } })
+        .sort({ _id: 1 })
+        .limit(pageLengthLanding);
+    }
     const resArray: Blog[] = [];
 
     //

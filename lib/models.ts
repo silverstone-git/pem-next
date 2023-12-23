@@ -27,6 +27,12 @@ export function parseObjToBlog(el: any) {
   return blog;
 }
 
+
+// CONTANTS
+//
+
+export const pageLengthLanding = 5;
+
 export const categories = [
   "webdev",
   "android",

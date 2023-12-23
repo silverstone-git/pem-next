@@ -16,7 +16,7 @@ const BlogCardLanding = async (props: { blog: Blog; setLoadingBlog: any }) => {
     <div className="flex flex-col">
       <div className="text-2xl font-bold mb-4">{titleString}</div>
       <div>{`${props.blog.content
-        .slice(0, 400)
+        .slice(0, 200)
         .replace(/[^A-Za-z0-9]/g, " ")}...`}</div>
       <div
         className="mt-4"
