@@ -67,11 +67,13 @@ const BlogView = async (props: {
   // console.log("\n\n\nstring before latex: \n\n", props.blog.content);
   // var htmlString = katex.renderToString(props.blog.content);
   // console.log("\n\nstring after latex: \n\n", htmlString);
+  
+  const authh = await auth();
+
   var htmlString = props.blog.content;
   htmlString = await marked.parse(props.blog.content);
   htmlString = await parseLatex(htmlString);
   //const session = useSession();
-  const authh = await auth();
 
   // we're using client because katexx apparently only renders best
   // using auto renderer, and that, is only exported to the window

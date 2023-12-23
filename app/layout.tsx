@@ -51,11 +51,11 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <HeaderBar></HeaderBar>
-            {children}
+            <div className=" min-h-[80vh] ">{children}</div>
           </ThemeProvider>
         </SessionProvider>
         <div className="h-10"></div>
-        <div className="w-full px-16 bg-zinc-900 dark:text-pink-300 text-pink-700 h-[15vh] flex justify-between items-center">
+        <div className="w-full px-16 bg-zinc-100 dark:bg-zinc-900 dark:text-pink-300 text-pink-700 h-[15vh] flex justify-between items-center">
           <div className="font-whisper font-bold text-2xl">
             Please Explain Me
           </div>
