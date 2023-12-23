@@ -5,6 +5,8 @@ import HeaderBar from "@/components/header-bar";
 import { auth } from "./auth";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Braces, CircleUser, Instagram, Mail } from "lucide-react";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,20 +40,6 @@ export default async function RootLayout({
           integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
           crossOrigin="anonymous"
         ></link>
-
-        <script
-          defer
-          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
-          integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
-          crossOrigin="anonymous"
-        ></script>
-
-        <script
-          defer
-          src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
-          integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
-          crossOrigin="anonymous"
-        ></script>
       </head>
 
       <body className={inter.className}>
@@ -66,6 +54,43 @@ export default async function RootLayout({
             {children}
           </ThemeProvider>
         </SessionProvider>
+        <div className="h-10"></div>
+        <div className="w-full px-16 bg-zinc-900 dark:text-pink-300 text-pink-700 h-[15vh] flex justify-between items-center">
+          <div className="font-whisper font-bold text-2xl">
+            Please Explain Me
+          </div>
+          <div className="flex gap-4">
+            <Link
+              className="hover:text-zinc-900 hover:dark:text-white transition-colors"
+              href={"https://instagram.com/@notcyto"}
+              target="blank"
+            >
+              <Instagram></Instagram>
+            </Link>
+            <Link
+              className="hover:text-zinc-900 hover:dark:text-white transition-colors"
+              href={"mailto:aryan_sidhwani@protonmail.com"}
+              target="blank"
+            >
+              <Mail></Mail>
+            </Link>
+            <Link
+              className="hover:text-zinc-900 hover:dark:text-white transition-colors"
+              href={"https://github.com/silverstone-git/pem-next/"}
+              target="blank"
+            >
+              {" "}
+              <Braces></Braces>
+            </Link>
+            <Link
+              className="hover:text-zinc-900 hover:dark:text-white transition-colors"
+              href={"https://aryan.cfd"}
+              target="blank"
+            >
+              <CircleUser></CircleUser>
+            </Link>
+          </div>
+        </div>
       </body>
     </html>
   );

@@ -29,6 +29,18 @@
   .blog-view-div code {
     @apply font-bold bg-zinc-200 dark:bg-zinc-700 rounded-md my-4 block w-fit py-2 px-4;
   }
+  .blog-view-div blockquote {
+    @apply p-4 bg-opacity-20 bg-pink-500 border-4 border-pink-800;
+  }
+  .blog-view-div .katex {
+    @apply text-xl;
+  }
+  .blog-view-div .katex-display-false {
+    @apply inline-block text-xl;
+  }
+  .blog-view-div .katex-display-true {
+    @apply block my-4 text-3xl;
+  }
 }
 
 /*
