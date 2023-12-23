@@ -13,7 +13,7 @@ const BlogCards = (props: {
   setLoadingBlog: any;
 }) => {
   return (
-    <div className="w-full md:w-1/2 lg:w-6/12 text-xl flex flex-col items-center">
+    <div className="w-full md:w-1/2 lg:w-6/12 min-h-[80vh] text-xl flex flex-col items-center">
       <div className="text-lg py-4 text-pink-700 dark:text-pink-300">
         RECENT BLOGS
       </div>
