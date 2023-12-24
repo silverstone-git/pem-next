@@ -23,3 +23,16 @@ export function refreshLocal(resArray: any[]) {
   }
 }
 
+
+export const getTitleFromContent = (blogContent: string) => {
+  const title = blogContent.match(/^#.*/gm);
+
+  if (title != null && title instanceof Array) {
+    //console.log("found the title:");
+    return title[0].toString().trim().slice(1).trim();
+    //console.log(titleString);
+  } else {
+    return "";
+  }
+};
+

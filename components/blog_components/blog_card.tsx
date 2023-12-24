@@ -1,17 +1,13 @@
 import { Blog } from "@/lib/models";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import {getTitleFromContent} from "@/lib/blog/blog_client";
 
 const BlogCardLanding = async (props: { blog: Blog; setLoadingBlog: any }) => {
   //await new Promise((resolve) => setTimeout(resolve, 3000));
-  const title = props.blog.content.match(/^#.*/gm);
-  var titleString: string = "";
+  var titleString: string = getTitleFromContent(props.blog.content);
   const router = useRouter();
-  if (title != null && title instanceof Array) {
-    //console.log("found the title:");
-    titleString = title[0].toString().trim().slice(1).trim();
-    //console.log(titleString);
-  }
+
   return (
     <div className="flex flex-col">
       <div className="text-2xl font-bold mb-4">{titleString}</div>

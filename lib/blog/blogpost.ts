@@ -18,7 +18,9 @@ const submitDrawings = async (
   }
 };
 
-export const getDrawingsByBlogId: (blogId: string) => Promise<Excali[]> = async (blogId: string) => {
+export const getDrawingsByBlogId: (
+  blogId: string
+) => Promise<Excali[]> = async (blogId: string) => {
   const client = await clientPromise;
   try {
     const db = client.db("pem");
@@ -53,6 +55,7 @@ export const submitBlogToDB = async (
       content: blogContent,
       category: blogCategory,
       dateAdded: new Date(),
+      views: 0,
     });
     console.log("inserted the blog, now, for the pictures.. \\/");
     await submitDrawings(db, user.email, insertedId.toString(), excalidrawings);
@@ -100,6 +103,7 @@ export const getLatestBlogs: (
         content: doc["content"],
         dateAdded: doc["dateAdded"],
         category: doc["category"],
+        views: doc["views"],
       });
     }
     //console.log("\narray end => \n");
@@ -111,12 +115,18 @@ export const getLatestBlogs: (
   }
 };
 
-export const getBlogById = async (id: string) => {
+export const getBlogById = async (blogId: string) => {
   // fetches latest 5 blogs from mongo
   const client = await clientPromise;
   try {
     const db = client.db("pem");
-    const res = await db.collection("blogs").findOne({ _id: new ObjectId(id) });
+    const res = await db
+      .collection("blogs")
+      .findOne({ _id: new ObjectId(blogId) });
+    var views = res == null ? 0 : res["views"];
+    await db
+      .collection("blogs")
+      .updateOne({ _id: new ObjectId(blogId) }, { $set: { views: views + 1 } });
     return res;
   } catch (e) {
     console.log("error is: ", e);
@@ -130,9 +140,8 @@ export const deleteBlogById = async (blogId: string) => {
     const db = client.db("pem");
     await db.collection("blogs").deleteOne({ _id: new ObjectId(blogId) });
     console.log("delete blog done, now, deleting drawings associated with it");
-    await db.collection("drawings").deleteMany({blogId: blogId});
+    await db.collection("drawings").deleteMany({ blogId: blogId });
     console.log("deleted drawings as well");
-
   } catch (e) {
     console.log("there was an error doing all that");
   }

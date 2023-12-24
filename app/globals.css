@@ -9,6 +9,12 @@
   .blog-view-div ul {
     @apply list-disc;
   }
+  .blog-view-div li:has(input[type="checkbox"]) {
+    @apply list-none;
+  }
+  .blog-view-div li input[type="checkbox"] {
+    @apply dark:accent-pink-300 accent-pink-700;
+  }
   .blog-view-div ul > li > ul {
     margin-left: 15px;
     list-style-type: circle;
@@ -30,7 +36,7 @@
     @apply font-bold bg-zinc-200 dark:bg-zinc-700 rounded-md my-4 block w-fit py-2 px-4;
   }
   .blog-view-div blockquote {
-    @apply p-4 bg-opacity-20 bg-pink-500 border-4 border-pink-800;
+    @apply p-4 my-8 bg-opacity-20 bg-pink-500 border-4 border-pink-800;
   }
   .blog-view-div .katex {
     @apply text-xl;

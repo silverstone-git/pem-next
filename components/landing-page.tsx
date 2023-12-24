@@ -6,8 +6,11 @@ import { Suspense, useState } from "react";
 import Loading from "./loading_landing_cards";
 import { Badge } from "./ui/badge";
 import LoadingBlogPage from "./loading_blog_page";
-import { MoveRight } from "lucide-react";
+import { DiamondIcon, MoveRight } from "lucide-react";
 import { getLatestBlogs } from "@/lib/blog/blogpost";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {getTitleFromContent} from "@/lib/blog/blog_client";
 
 const BlogCards = (props: {
   blogs: Blog[];
@@ -104,6 +107,7 @@ const LandingPage = (props: { res: Blog[] }) => {
   const [selectedCategory, setCategory] = useState("*");
   const [loadingBlog, setLoadingBlog] = useState(false);
   const [lastPage, setLastPage] = useState(false);
+  const router = useRouter();
 
   const [blogsArr, setBlogsArr] = useState(props.res);
 
@@ -141,6 +145,28 @@ const LandingPage = (props: { res: Blog[] }) => {
                 />
               );
             })}
+          </div>
+          <div className="text-pink-700 dark:text-pink-300 py-4">
+            POPULAR BLOGS
+          </div>
+          <div className="flex gap-3 flex-col">
+            {blogsArr
+              .toSorted((blogA, blogB) => blogB.views - blogA.views)
+              .map((el) => {
+                return (
+                  <div key={el.id}
+                      onClick={() => router.replace(`/blogs/${el.id}`)}
+		      className="flex gap-2"
+		  >
+                    <DiamondIcon className="inline text-sm"></DiamondIcon>
+                    <div
+                      className="cursor-pointer"
+                    >
+                      {getTitleFromContent(el.content)}
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>

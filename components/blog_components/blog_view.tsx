@@ -5,7 +5,7 @@ import katex from "katex";
 import { auth } from "@/app/auth";
 import Link from "next/link";
 import { marked } from "marked";
-import { Trash } from "lucide-react";
+import { EyeIcon, Trash } from "lucide-react";
 import BlogViewClient from "./blog_view_client";
 
 const parseLatexAndSepDrawings = async (htmlString: string) => {
@@ -83,18 +83,25 @@ const BlogView = async (props: {
     <div className="flex flex-col items-center">
       <div className="w-full md:w-11/12 lg:w-2/3 blog-view-div">
         <div className="italic font-bold my-6">
-          {" "}
-          Written by {props.blog.name} on{" "}
-          {props.blog.dateAdded.toLocaleDateString()}{" "}
-          {props.blog.name == authh?.user?.name ? (
-            <div className="ml-4 inline">
-              <Link href={"/api/blogs/delete-blog/" + props.blog.id}>
-                <Button variant={"destructive"} size={"icon"}>
-                  <Trash></Trash>
-                </Button>
-              </Link>
+          <div className="flex flex-row gap-4">
+            <div>
+              {" "}
+              Written by {props.blog.name} on{" "}
+              {props.blog.dateAdded.toLocaleDateString()}{" "}
+              {props.blog.email == authh?.user?.email ? (
+                <div className="ml-4 inline">
+                  <Link href={"/api/blogs/delete-blog/" + props.blog.id}>
+                    <Button variant={"destructive"} size={"icon"}>
+                      <Trash></Trash>
+                    </Button>
+                  </Link>
+                </div>
+              ) : null}
             </div>
-          ) : null}
+            {/*<div className="opacity-50 self-center justify-self-center">
+              <EyeIcon className="inline" /> {props.blog.views}
+            </div>*/}
+          </div>
         </div>
         <BlogViewClient
           blogId={props.blog.id}

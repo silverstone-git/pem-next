@@ -8,6 +8,7 @@ export interface Blog {
   email: string;
   category: string;
   dateAdded: Date;
+  views: number;
 }
 
 export interface Excali {
@@ -24,6 +25,7 @@ export const initBlog: Blog = {
   email: "",
   category: "",
   dateAdded: new Date(),
+  views: 0,
 };
 
 export function parseObjToBlog(el: any) {
@@ -33,12 +35,13 @@ export function parseObjToBlog(el: any) {
   blog.content = el["content"];
   blog.dateAdded = el["dateAdded"];
   blog.category = el["category"];
+  blog.views = el["views"];
   blog.id = el["_id"].toString();
   return blog;
 }
 
 
-// CONTANTS
+// CONSTANTS
 //
 
 export const pageLengthLanding = 5;
