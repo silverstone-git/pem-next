@@ -18,6 +18,24 @@ const submitDrawings = async (
   }
 };
 
+export const getDrawingsByBlogId: (blogId: string) => Promise<Excali[]> = async (blogId: string) => {
+  const client = await clientPromise;
+  try {
+    const db = client.db("pem");
+    const excalidrawingsCursor = db
+      .collection("drawings")
+      .find({ blogId: blogId });
+    const excalidrawings: Excali[] = [];
+    for await (const doc of excalidrawingsCursor) {
+      excalidrawings.push(doc.drawing);
+    }
+    return excalidrawings;
+  } catch (e) {
+    console.log("image fetching error");
+    return [];
+  }
+};
+
 export const submitBlogToDB = async (
   user: { name: string; email: string },
   blogContent: string,

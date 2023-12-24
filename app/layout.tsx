@@ -24,6 +24,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script defer src="https://cdn.jsdelivr.net/gh/c-kick/mobileConsole/hnl.mobileconsole.min.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com"></link>
         <link
           rel="preconnect"

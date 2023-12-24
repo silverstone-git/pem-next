@@ -6,21 +6,14 @@ import { auth } from "@/app/auth";
 import Link from "next/link";
 import { marked } from "marked";
 import { Trash } from "lucide-react";
+import BlogViewClient from "./blog_view_client";
 
-/*
-const deleteBlog = async (id: string) => {
-  // delete the monogo blog by article id
-  //
-  console.log("delete button has been clicked");
-  await deleteBlogById(id);
-  console.log("delete done");
-};
-*/
-
-const parseLatex = async (htmlString: string) => {
+const parseLatexAndSepDrawings = async (htmlString: string) => {
   // parses latex in an html string
+  // and separates blog by images
   var res = "";
   var i = 0;
+  const htmlSectionsSeppedByDrawings: string[] = [];
   while (i < htmlString.length - 1) {
     if (htmlString[i] == "$" && htmlString[i + 1] == "$") {
       // if block latex opener is spotted, find out where it ends
@@ -51,12 +44,27 @@ const parseLatex = async (htmlString: string) => {
         katex.renderToString(toBeLatexxed) +
         "</div>";
       i = j;
+    } else if (
+      htmlString[i] == "!" &&
+      htmlString[i + 1] == "[" &&
+      htmlString[i + 2] == "["
+    ) {
+      htmlSectionsSeppedByDrawings.push(res);
+      res = "";
+      while (
+        !(htmlString[i] === "]" && htmlString[i + 1] === "]") &&
+        i < htmlString.length - 2
+      ) {
+        i++;
+      }
+      i++;
     } else {
       res += htmlString[i];
     }
     i++;
   }
-  return res;
+  htmlSectionsSeppedByDrawings.push(res);
+  return htmlSectionsSeppedByDrawings;
 };
 
 const BlogView = async (props: {
@@ -64,33 +72,13 @@ const BlogView = async (props: {
   blog: Blog;
   passedId: string;
 }) => {
-  // console.log("\n\n\nstring before latex: \n\n", props.blog.content);
-  // var htmlString = katex.renderToString(props.blog.content);
-  // console.log("\n\nstring after latex: \n\n", htmlString);
-  
   const authh = await auth();
 
-  var htmlString = props.blog.content;
-  htmlString = await marked.parse(props.blog.content);
-  htmlString = await parseLatex(htmlString);
-  //const session = useSession();
+  const htmlString = await marked.parse(props.blog.content);
+  const htmlSectionsSeppedByDrawings = await parseLatexAndSepDrawings(
+    htmlString
+  );
 
-  // we're using client because katexx apparently only renders best
-  // using auto renderer, and that, is only exported to the window
-  // object which is in client (browser)
-
-  /*
-  useEffect(() => {
-    window.renderMathInElement(document.body, {
-      delimiters: [
-        { left: "$$", right: "$$", display: true },
-        { left: "$", right: "$", display: false },
-      ],
-    });
-  }, []);
-  */
-
-  //console.log("\n\nstring after mkd: \n\n", htmlString);
   return (
     <div className="flex flex-col items-center">
       <div className="w-full md:w-11/12 lg:w-2/3 blog-view-div">
@@ -108,11 +96,10 @@ const BlogView = async (props: {
             </div>
           ) : null}
         </div>
-        <div
-          dangerouslySetInnerHTML={{ __html: htmlString }}
-          id="blogViewMd"
-        ></div>
-        {/*<Markdown>{htmlString}</Markdown>*/}
+        <BlogViewClient
+          blogId={props.blog.id}
+          htmlSectionsSeppedByDrawings={htmlSectionsSeppedByDrawings}
+        />
       </div>
     </div>
   );
