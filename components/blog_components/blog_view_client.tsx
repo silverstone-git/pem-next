@@ -5,6 +5,7 @@ import { Excali } from "@/lib/models";
 import { useEffect, useState } from "react";
 import LoadingCard from "../loading_card";
 import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 
 const BlogViewClient = (props: {
   htmlSectionsSeppedByDrawings: string[];
@@ -20,16 +21,18 @@ const BlogViewClient = (props: {
     }
   );
 
-  console.log("sections are: ", props.htmlSectionsSeppedByDrawings);
-
   useEffect(() => {
     if (props.htmlSectionsSeppedByDrawings.length > 1) {
       getDrawingsByBlogId(props.blogId).then((val: Excali[]) => {
-        console.log("got drawings, the first is: ", val[0].elements);
+        console.log("got drawings: ", val);
         setDrawings(val);
       });
     }
   }, [props.blogId, props.htmlSectionsSeppedByDrawings.length]);
+
+  const { theme } = useTheme();
+
+
 
   return (
     <div>
@@ -38,12 +41,16 @@ const BlogViewClient = (props: {
           return (
             <div key={curIndex}>
               <div dangerouslySetInnerHTML={{ __html: el }}></div>
-              {drawings.length > 0 ? (
-                <Excalidraw
-                  initialData={drawings[curIndex]}
-                  isCollaborating={false}
-                />
-              ) : props.htmlSectionsSeppedByDrawings.length > 1 ? (
+              {drawings.length > 0 && curIndex < drawings.length ? (
+                <div className="h-[50vh] w-full">
+                  <Excalidraw
+                    initialData={drawings[curIndex]}
+                    viewModeEnabled={true}
+		    theme={theme === "light" || theme === "dark" ? theme : "dark"}
+                  />
+                </div>
+              ) : props.htmlSectionsSeppedByDrawings.length > 1 &&
+                curIndex < drawings.length ? (
                 <LoadingCard />
               ) : null}
             </div>
