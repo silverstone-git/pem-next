@@ -1,26 +1,44 @@
 "use server";
 import clientPromise from "@/lib/mongodb";
-import { ObjectId } from "mongodb";
-import { Blog, pageLengthLanding, parseObjToBlog } from "../models";
+import { Db, ObjectId } from "mongodb";
+import { Blog, Excali, pageLengthLanding, parseObjToBlog } from "../models";
+
+const submitDrawings = async (
+  db: Db,
+  email: string,
+  blogId: string,
+  excalidrawings: Excali[]
+) => {
+  for (var i = 0; i < excalidrawings.length; i++) {
+    await db.collection("drawings").insertOne({
+      email: email,
+      blogId: blogId,
+      drawing: excalidrawings[i],
+    });
+  }
+};
 
 export const submitBlogToDB = async (
   user: { name: string; email: string },
   blogContent: string,
-  blogCategory: string
+  blogCategory: string,
+  excalidrawings: Excali[]
 ) => {
   // auth and then send it to db
   const client = await clientPromise;
   try {
     console.log("client connection awaited");
     const db = client.db("pem");
-    await db.collection("blogs").insertOne({
+    const { insertedId } = await db.collection("blogs").insertOne({
       name: user.name,
       email: user.email,
       content: blogContent,
       category: blogCategory,
       dateAdded: new Date(),
     });
-    console.log("inserted \\/");
+    console.log("inserted the blog, now, for the pictures.. \\/");
+    await submitDrawings(db, user.email, insertedId.toString(), excalidrawings);
+    console.log("done submitting the drawings \\/");
     return 0;
   } catch (e) {
     console.log("an error ocurred while submitting to mongodb");

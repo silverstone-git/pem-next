@@ -1,3 +1,6 @@
+import {ExcalidrawElement} from "@excalidraw/excalidraw/types/element/types";
+import {AppState, BinaryFiles} from "@excalidraw/excalidraw/types/types";
+
 export interface Blog {
   id: string;
   content: string;
@@ -5,6 +8,13 @@ export interface Blog {
   email: string;
   category: string;
   dateAdded: Date;
+}
+
+export interface Excali {
+	elements: ExcalidrawElement[];
+	appState: AppState;
+	scrollToContent: boolean;
+	files: BinaryFiles;
 }
 
 export const initBlog: Blog = {

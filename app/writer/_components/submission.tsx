@@ -1,13 +1,17 @@
 "use client";
 import { useSession } from "next-auth/react";
-import React, { MutableRefObject, useState } from "react";
+import React, { useState } from "react";
 import { submitBlogToDB } from "@/lib/blog/blogpost";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { Excali } from "@/lib/models";
+import { Input } from "@/components/ui/input";
 
 const SubmissionComponent = () => {
   const [fileStr, setFileStr] = useState("");
   const [category, setCatgory] = useState("");
+  const initExcaliDrawings: Excali[] = [];
+  const [excalidrawings, setExcalidrawings] = useState(initExcaliDrawings);
   const session = useSession();
   const router = useRouter();
   const userObj = {
@@ -55,43 +59,90 @@ const SubmissionComponent = () => {
     };
   };
 
+  const handleExcalidrawFiles = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files == null) return;
+    const fileList = Array.from(e.target.files);
+    for (var i = 0; i < fileList.length; i++) {
+      // looping through the .excalidraw.md files
+      const reader = new FileReader();
+      reader.readAsText(fileList[i]);
+      reader.onloadend = () => {
+        if (reader.result == null) return;
+        // the text content
+        const excaliMdText = reader.result.toString();
+        var jsonText = excaliMdText.substring(
+          excaliMdText.indexOf("```") + 3,
+          excaliMdText.lastIndexOf("```") - 1
+        );
+        jsonText = jsonText.substring(
+          jsonText.indexOf("{"),
+          jsonText.lastIndexOf("}") + 1
+        );
+        console.log("to be parsed string is: ");
+	console.log(jsonText);
+        const excaliObj = JSON.parse(jsonText);
+        const excali: Excali = {
+          elements: excaliObj.elements,
+          appState: excaliObj.appState,
+          files: excaliObj.files,
+          scrollToContent: true,
+        };
+        setExcalidrawings([...excalidrawings, excali]);
+      };
+    }
+    console.log("file strings at the end is: ");
+    console.log(excalidrawings);
+  };
+
   return (
     <div className="h-[85vh] w-full flex justify-center items-center">
       <div className="flex flex-col gap-4 w-[50%]">
         <form
           className="flex flex-col gap-4"
           onSubmit={() => {
-            submitBlogToDB(userObj, fileStr, category).then(() => {
-              console.log("blog submitted successffully!");
-              router.replace("/");
-            });
+            submitBlogToDB(userObj, fileStr, category, excalidrawings).then(
+              () => {
+                console.log("blog submitted successfully!");
+                router.replace("/");
+              }
+            );
           }}
         >
           <div className="flex flex-col gap-2">
             <label htmlFor="file-picker-blog-markdown">
               Choose a Blog File (.md)
             </label>
-            <input
-              className="bg-zinc-200 dark:bg-zinc-800"
+            <Input
               id="file-picker-blog-markdown"
               onChange={handleFile}
               type="file"
               required
-            ></input>
+            ></Input>
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="blog-category-input-field">
               Write down a category for this article
             </label>
-            <input
-              className="bg-zinc-200 dark:bg-zinc-800"
+            <Input
               id="blog-category-input-field"
               onChange={(event) => {
                 setCatgory(event.target.value.trim());
               }}
               type="text"
               required
-            ></input>
+            ></Input>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="file-picker-images">
+              Select all the .excalidraw.md files for this blog
+            </label>
+            <Input
+              id="file-picker-excalidraw"
+              onChange={handleExcalidrawFiles}
+              type="file"
+            />
           </div>
           <Button type="submit">Submit blog</Button>
         </form>

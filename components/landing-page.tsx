@@ -1,7 +1,7 @@
 "use client";
 
 import BlogCardLanding from "./blog_components/blog_card";
-import { Blog, categories } from "@/lib/models";
+import { Blog, categories, pageLengthLanding } from "@/lib/models";
 import { Suspense, useState } from "react";
 import Loading from "./loading_landing_cards";
 import { Badge } from "./ui/badge";
@@ -11,10 +11,12 @@ import { getLatestBlogs } from "@/lib/blog/blogpost";
 
 const BlogCards = (props: {
   blogs: Blog[];
+  lastPage: boolean;
   showCategory: string;
   setCategory: any;
   setBlogs: any;
   setLoadingBlog: any;
+  setLastPage: any;
 }) => {
   return (
     <div className="w-full md:w-1/2 lg:w-6/12 h-full text-xl flex flex-col items-center">
@@ -44,18 +46,25 @@ const BlogCards = (props: {
           })}
         </Suspense>
 
-        <button
-          className="mt-4 self-center dark:text-pink-300 text-pink-700"
-          onClick={async () => {
-            // add new blogs to blog array
-            const lastId: string = props.blogs[props.blogs.length - 1].id;
-            const newBlogs: Blog[] = await getLatestBlogs(lastId);
-            props.setBlogs([...props.blogs, ...newBlogs]);
-            props.setCategory("*");
-          }}
-        >
-          Load More <MoveRight className="inline"></MoveRight>
-        </button>
+        {!props.lastPage ? (
+          <div>
+            <button
+              className="mt-4 self-center dark:text-pink-300 text-pink-700"
+              onClick={async () => {
+                // add new blogs to blog array
+                const lastId: string = props.blogs[props.blogs.length - 1].id;
+                const newBlogs: Blog[] = await getLatestBlogs(lastId);
+                if (newBlogs.length < pageLengthLanding) {
+                  props.setLastPage(true);
+                }
+                props.setBlogs([...props.blogs, ...newBlogs]);
+                props.setCategory("*");
+              }}
+            >
+              Load More <MoveRight className="inline"></MoveRight>
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -94,6 +103,7 @@ const LandingPage = (props: { res: Blog[] }) => {
 
   const [selectedCategory, setCategory] = useState("*");
   const [loadingBlog, setLoadingBlog] = useState(false);
+  const [lastPage, setLastPage] = useState(false);
 
   const [blogsArr, setBlogsArr] = useState(props.res);
 
@@ -104,10 +114,12 @@ const LandingPage = (props: { res: Blog[] }) => {
       <div className="flex flex-col md:flex-row justify-normal md:justify-center gap-16 md:gap-4 pt-16">
         <BlogCards
           blogs={blogsArr}
+          lastPage={lastPage}
           showCategory={selectedCategory}
           setCategory={setCategory}
           setLoadingBlog={setLoadingBlog}
           setBlogs={setBlogsArr}
+          setLastPage={setLastPage}
         />
         <div className="w-full md:w-1/3 lg:w-3/12">
           <div className="text-pink-700 dark:text-pink-300 py-4">
