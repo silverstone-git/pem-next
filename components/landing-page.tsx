@@ -10,7 +10,7 @@ import { DiamondIcon, MoveRight } from "lucide-react";
 import { getLatestBlogs } from "@/lib/blog/blogpost";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {getTitleFromContent} from "@/lib/blog/blog_client";
+import { getTitleFromContent } from "@/lib/blog/blog_client";
 
 const BlogCards = (props: {
   blogs: Blog[];
@@ -146,22 +146,22 @@ const LandingPage = (props: { res: Blog[] }) => {
               );
             })}
           </div>
-          <div className="text-pink-700 dark:text-pink-300 py-4">
+          <div className="text-pink-700 dark:text-pink-300 py-4 mt-7">
             POPULAR BLOGS
           </div>
           <div className="flex gap-3 flex-col">
             {blogsArr
               .toSorted((blogA, blogB) => blogB.views - blogA.views)
+              .slice(0, 5)
               .map((el) => {
                 return (
-                  <div key={el.id}
-                      onClick={() => router.replace(`/blogs/${el.id}`)}
-		      className="flex gap-2"
-		  >
+                  <div
+                    key={el.id}
+                    onClick={() => router.replace(`/blogs/${el.id}`)}
+                    className="flex gap-2"
+                  >
                     <DiamondIcon className="inline text-sm"></DiamondIcon>
-                    <div
-                      className="cursor-pointer"
-                    >
+                    <div className="cursor-pointer">
                       {getTitleFromContent(el.content)}
                     </div>
                   </div>
