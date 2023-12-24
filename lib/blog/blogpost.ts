@@ -123,12 +123,16 @@ export const getBlogById = async (id: string) => {
   }
 };
 
-export const deleteBlogById = async (id: string) => {
+export const deleteBlogById = async (blogId: string) => {
   // deletes the article by id
   const client = await clientPromise;
   try {
     const db = client.db("pem");
-    db.collection("blogs").deleteOne({ _id: new ObjectId(id) });
+    await db.collection("blogs").deleteOne({ _id: new ObjectId(blogId) });
+    console.log("delete blog done, now, deleting drawings associated with it");
+    await db.collection("drawings").deleteMany({blogId: blogId});
+    console.log("deleted drawings as well");
+
   } catch (e) {
     console.log("there was an error doing all that");
   }

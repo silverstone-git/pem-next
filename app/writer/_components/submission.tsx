@@ -59,15 +59,13 @@ const SubmissionComponent = () => {
     };
   };
 
-  const handleExcalidrawFiles = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.files == null) return;
-    const fileList = Array.from(e.target.files);
+  const getExcaliDrawingsFromFileList = async (fileList: File[]) => {
+    const excaliDrawingsLocal: Excali[] = [];
     for (var i = 0; i < fileList.length; i++) {
       // looping through the .excalidraw.md files
       const reader = new FileReader();
       reader.readAsText(fileList[i]);
+
       reader.onloadend = () => {
         if (reader.result == null) return;
         // the text content
@@ -80,8 +78,7 @@ const SubmissionComponent = () => {
           jsonText.indexOf("{"),
           jsonText.lastIndexOf("}") + 1
         );
-        console.log("to be parsed string is: ");
-	console.log(jsonText);
+
         const excaliObj = JSON.parse(jsonText);
         const excali: Excali = {
           elements: excaliObj.elements,
@@ -89,11 +86,20 @@ const SubmissionComponent = () => {
           files: excaliObj.files,
           scrollToContent: true,
         };
-        setExcalidrawings([...excalidrawings, excali]);
+        excaliDrawingsLocal.push(excali);
       };
     }
-    console.log("file strings at the end is: ");
-    console.log(excalidrawings);
+    return excaliDrawingsLocal;
+  };
+
+  const handleExcalidrawFiles = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files == null) return;
+    const fileList = Array.from(e.target.files);
+
+    const excalidrawingsRes: Excali[] = await getExcaliDrawingsFromFileList(fileList);
+    setExcalidrawings(excalidrawingsRes);
   };
 
   return (
@@ -142,10 +148,19 @@ const SubmissionComponent = () => {
               id="file-picker-excalidraw"
               onChange={handleExcalidrawFiles}
               type="file"
+              multiple={true}
             />
           </div>
           <Button type="submit">Submit blog</Button>
         </form>
+        {/*<Button
+          onClick={() => {
+            console.log("excalidrawings is: ");
+            console.log(excalidrawings);
+          }}
+        >
+          Log Excali
+        </Button>*/}
       </div>
     </div>
   );
