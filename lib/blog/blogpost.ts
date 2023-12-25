@@ -142,13 +142,17 @@ export const getBlogById = async (blogId: string, session: Session | null) => {
   const client = await clientPromise;
   try {
     const db = client.db("pem");
-    const res = await db
-      .collection("blogs")
-      .findOne({ _id: new ObjectId(blogId) });
+    var res;
     if (session?.user) {
-      await db
+      res = await db
         .collection("blogs")
-        .updateOne({ _id: new ObjectId(blogId) }, { $inc: { views: 1 } });
+        .findOneAndUpdate(
+          { _id: new ObjectId(blogId) },
+          { $inc: { views: 1 } },
+          { returnOriginal: false }
+        );
+    } else {
+      res = await db.collection("blogs").findOne({ _id: new ObjectId(blogId) });
     }
     return res;
   } catch (e) {
@@ -181,47 +185,27 @@ export const sendLike = async (blogId: string, userObj: User | undefined) => {
   const client = await clientPromise;
   try {
     const db = client.db("pem");
-    const user = await db.collection("users").findOne({ email: userObj.email });
-    console.log("found user: ", user);
-
-    if (
-      user &&
-      user["liked"] &&
-      user["liked"].find((val: string, index: number) => {
-        return val === blogId;
-      })
-    ) {
-      // user already liked it
-      console.log("user already liked it");
-
-      return;
-    } else if (user) {
-      await db
-        .collection("blogs")
-        .updateOne({ _id:  new ObjectId(blogId) }, { $inc: { likes: 1 } });
-      console.log(
-        "incremented the likes, now, adding the liked blog id to user.."
-      );
-      if (user["liked"]) {
-        // the array exists, we just have to push
-        await db
-          .collection("users")
-          .updateOne({ email: userObj.email }, { $push: { liked: blogId } });
-      } else {
-        // user exists but the liked array doesnt, so, create anew
-        await db
-          .collection("users")
-          .updateOne({ email: userObj.email }, { $set: { liked: [blogId] } });
-      }
-      console.log("added blog to liked array in user ! \\/");
-    } else {
-	    console.log("user hi nhi tha XXXXXXX");
-    }
+    await db
+      .collection("users")
+      .updateOne({ email: userObj.email }, { $push: { liked: blogId } });
+    await db
+      .collection("blogs")
+      .updateOne({ _id: new ObjectId(blogId) }, { $inc: { likes: 1 } });
   } catch (e) {
     console.log("there was an error doing all that");
   } finally {
     //client.close();
   }
-
   return;
+};
+
+export const getUser = async (email: string) => {
+  const client = await clientPromise;
+  try {
+    const db = client.db("pem");
+    const user = await db.collection("users").findOne({ email: email });
+    return user;
+  } catch (e) {
+    console.log(e);
+  }
 };

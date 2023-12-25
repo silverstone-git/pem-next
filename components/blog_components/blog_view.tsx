@@ -1,7 +1,7 @@
 import { Blog } from "@/lib/models";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { Heart, MessageCircle, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import BlogViewClient from "./blog_view_client";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
@@ -9,6 +9,7 @@ import hljs from "highlight.js";
 import { Session } from "next-auth";
 import markedKatex from "marked-katex-extension";
 import BlogLikeBar from "./blog-like-bar";
+import {getUser} from "@/lib/blog/blogpost";
 
 const sepDrawings = async (htmlString: string) => {
   // parses latex in an html string
@@ -58,6 +59,11 @@ const BlogView = async (props: {
   marked.use(markedKatex({ throwOnError: false }));
   const htmlString = await marked.parse(props.blog.content);
   const htmlSectionsSeppedByDrawings = await sepDrawings(htmlString);
+  console.log("server session, ie, auth() is: ", props.authh);
+  var alreadyLiked = null;
+  if(props.authh?.user?.email) {
+  	alreadyLiked = (await getUser(props.authh.user.email))?.liked;
+  }
 
   return (
     <div className="flex flex-col items-center">
@@ -87,7 +93,7 @@ const BlogView = async (props: {
           blogId={props.blog.id}
           htmlSectionsSeppedByDrawings={htmlSectionsSeppedByDrawings}
         />
-	<BlogLikeBar blogId={props.blog.id} />
+	<BlogLikeBar blogId={props.blog.id} alreadyLiked={alreadyLiked} />
       </div>
     </div>
   );

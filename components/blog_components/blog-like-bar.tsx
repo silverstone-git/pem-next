@@ -48,10 +48,10 @@ const LikeButton = ({
   );
 };
 
-const BlogLikeBar = (props: { blogId: string }) => {
+const BlogLikeBar = (props: { blogId: string; alreadyLiked: string[] | null }) => {
   "use client";
   const [commentMode, setCommentMode] = useState(false);
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(props.alreadyLiked == null ? false : props.alreadyLiked.find((val) => props.blogId == val));
 
   const session = useSession();
   console.log("session data user is: ", session.data?.user);
