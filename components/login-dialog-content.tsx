@@ -6,22 +6,25 @@ import { Label } from "./ui/label";
 import { signIn } from "next-auth/react";
 import { Github } from "lucide-react";
 import {useState} from "react";
+import LoadingSpinner from "./spinner";
 
 const LoginDialogContent = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loadingLogin, setLoadingLogin] = useState(false);
   return (
     <DialogContent>
       <DialogHeader>Please Log In in to continue</DialogHeader>
-      <form
+      { loadingLogin ? <div className="h-[31vh] w-full flex justify-center items-center"><LoadingSpinner /></div>  : <form
+      className="flex flex-col gap-2"
         action=""
         onSubmit={(e: any) => {
           e.preventDefault();
+	  setLoadingLogin(true);
           console.log(email);
-          console.log(password);
+	  signIn("email", { email });
         }}
       >
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-2">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="email" className="text-right">
               E-Mail
@@ -34,19 +37,12 @@ const LoginDialogContent = () => {
               required
             />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="password" className="text-right">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              onChange={(e) => setPassword(e.target.value.trim())}
-              className="col-span-3"
-              required
-            />
-          </div>
         </div>
+	<div className="flex gap-2 pt-3 pb-5 self-center">
+		<div className="dark:bg-zinc-300 bg-zinc-700 w-32 h-[1px] self-center"></div>
+		<div>Or</div>
+		<div className="dark:bg-zinc-300 bg-zinc-700 w-32 h-[1px] self-center"></div>
+	</div>
         <div className="flex flex-col gap-4">
           <Button
             variant={"outline"}
@@ -82,7 +78,7 @@ const LoginDialogContent = () => {
             Log In
           </Button>
         </DialogFooter>
-      </form>
+      </form>}
     </DialogContent>
   );
 };

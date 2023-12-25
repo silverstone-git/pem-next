@@ -3,6 +3,7 @@ import { ModeToggle } from "./shadcn-buttons/mode-toggle";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { LogoutAction } from "./auth-actions";
+import LoginButtonHeader from "./login-button-header";
 
 const LogoutButton = async () => {
   return (
@@ -11,14 +12,6 @@ const LogoutButton = async () => {
         <Button variant={"outline"}>Log Out</Button>
       </form>
     </div>
-  );
-};
-
-const LoginButton = () => {
-  return (
-    <Link href={"/api/auth/signin"}>
-      <Button variant={"outline"}>Sign In</Button>
-    </Link>
   );
 };
 
@@ -37,7 +30,7 @@ const HeaderBar = async () => {
           <div>
             <ModeToggle></ModeToggle>
           </div>
-          <div>{session?.user ? <LogoutButton /> : <LoginButton />}</div>
+          <div>{session?.user ? <LogoutButton /> : <LoginButtonHeader />}</div>
         </div>
       </div>
     </div>
