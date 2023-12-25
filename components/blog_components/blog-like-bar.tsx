@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import LoginDialogContent from "../login-dialog-content";
 import { useTheme } from "next-themes";
+import {sendLike} from "@/lib/blog/blogpost";
 
 const CommentButton = ({ onClick = () => {}, ...props }) => {
   return (
@@ -62,9 +63,11 @@ const BlogLikeBar = (props: { blogId: string }) => {
         ) : (
           <LikeButton
             onClick={async () => {
-              // sendLike(props.blogId, session);
               console.log("like button was clicked as loggedin");
               setLiked(true);
+              sendLike(props.blogId, session.data?.user).then((val) => {
+	      console.log("<<stop loading>>\n\n like action successfully performed");
+	      });
             }}
           />
         )}

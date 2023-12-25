@@ -1,15 +1,9 @@
 "use server";
 import clientPromise from "@/lib/mongodb";
 import { Db, ObjectId } from "mongodb";
-import {
-  Blog,
-  Excali,
-  pageLengthLanding,
-  parseObjToBlog,
-} from "../models";
-import { Session } from "next-auth";
+import { Blog, Excali, pageLengthLanding } from "../models";
+import { Session, User } from "next-auth";
 import { auth } from "@/app/auth";
-
 
 const writers: string[] = ["silverstone965@gmail.com"];
 
@@ -53,6 +47,8 @@ export const getDrawingsByBlogId: (
   } catch (e) {
     console.log("image fetching error");
     return [];
+  } finally {
+    //client.close();
   }
 };
 
@@ -65,9 +61,9 @@ export const submitBlogToDB = async (
   // auth and then send it to db
   const session = await auth();
   if (session?.user?.email == null || isNotWriter(session?.user?.email)) {
-	  console.log("______ 403 ______");
-	  return;
-  };
+    console.log("______ 403 ______");
+    return;
+  }
   const client = await clientPromise;
   try {
     console.log("client connection awaited");
@@ -88,7 +84,7 @@ export const submitBlogToDB = async (
     console.log("an error ocurred while submitting to mongodb");
     return 1;
   } finally {
-    client.close();
+    //client.close();
   }
 };
 
@@ -127,6 +123,7 @@ export const getLatestBlogs: (
         dateAdded: doc["dateAdded"],
         category: doc["category"],
         views: doc["views"],
+        likes: doc["likes"],
       });
     }
     //console.log("\narray end => \n");
@@ -135,6 +132,8 @@ export const getLatestBlogs: (
   } catch (e) {
     console.log("error is: ", e);
     return [];
+  } finally {
+    //client.close();
   }
 };
 
@@ -147,17 +146,15 @@ export const getBlogById = async (blogId: string, session: Session | null) => {
       .collection("blogs")
       .findOne({ _id: new ObjectId(blogId) });
     if (session?.user) {
-      var views = res == null ? 0 : res["views"];
       await db
         .collection("blogs")
-        .updateOne(
-          { _id: new ObjectId(blogId) },
-          { $set: { views: views + 1 } }
-        );
+        .updateOne({ _id: new ObjectId(blogId) }, { $inc: { views: 1 } });
     }
     return res;
   } catch (e) {
     console.log("error is: ", e);
+  } finally {
+    //client.close();
   }
 };
 
@@ -172,5 +169,59 @@ export const deleteBlogById = async (blogId: string) => {
     console.log("deleted drawings as well");
   } catch (e) {
     console.log("there was an error doing all that");
+  } finally {
+    //client.close();
   }
+};
+
+export const sendLike = async (blogId: string, userObj: User | undefined) => {
+  if (!userObj?.email) return;
+  console.log("user email tbs is: ", userObj?.email);
+  console.log("blogid tbs is: ", blogId);
+  const client = await clientPromise;
+  try {
+    const db = client.db("pem");
+    const user = await db.collection("users").findOne({ email: userObj.email });
+    console.log("found user: ", user);
+
+    if (
+      user &&
+      user["liked"] &&
+      user["liked"].find((val: string, index: number) => {
+        return val === blogId;
+      })
+    ) {
+      // user already liked it
+      console.log("user already liked it");
+
+      return;
+    } else if (user) {
+      await db
+        .collection("blogs")
+        .updateOne({ _id:  new ObjectId(blogId) }, { $inc: { likes: 1 } });
+      console.log(
+        "incremented the likes, now, adding the liked blog id to user.."
+      );
+      if (user["liked"]) {
+        // the array exists, we just have to push
+        await db
+          .collection("users")
+          .updateOne({ email: userObj.email }, { $push: { liked: blogId } });
+      } else {
+        // user exists but the liked array doesnt, so, create anew
+        await db
+          .collection("users")
+          .updateOne({ email: userObj.email }, { $set: { liked: [blogId] } });
+      }
+      console.log("added blog to liked array in user ! \\/");
+    } else {
+	    console.log("user hi nhi tha XXXXXXX");
+    }
+  } catch (e) {
+    console.log("there was an error doing all that");
+  } finally {
+    //client.close();
+  }
+
+  return;
 };
