@@ -19,7 +19,8 @@ const IdPage = async ({ params }: { params: { passedId: string } }) => {
   */
   var blog: Blog = initBlog;
   // await new Promise((resolve) => setTimeout(resolve, 3000));
-  const res = await getBlogById(params.passedId);
+  const session = await auth();
+  const res = await getBlogById(params.passedId, session);
   if (res) {
     blog = parseObjToBlog(res);
   } else {
@@ -34,6 +35,7 @@ const IdPage = async ({ params }: { params: { passedId: string } }) => {
       <BlogView
         blog={blog}
         passedId={params.passedId}
+	authh={session}
       ></BlogView>
     </div>
   );

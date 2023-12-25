@@ -2,6 +2,7 @@
 import clientPromise from "@/lib/mongodb";
 import { Db, ObjectId } from "mongodb";
 import { Blog, Excali, pageLengthLanding, parseObjToBlog } from "../models";
+import { Session } from "next-auth";
 
 const submitDrawings = async (
   db: Db,
@@ -115,7 +116,7 @@ export const getLatestBlogs: (
   }
 };
 
-export const getBlogById = async (blogId: string) => {
+export const getBlogById = async (blogId: string, session: Session | null) => {
   // fetches latest 5 blogs from mongo
   const client = await clientPromise;
   try {
@@ -123,10 +124,15 @@ export const getBlogById = async (blogId: string) => {
     const res = await db
       .collection("blogs")
       .findOne({ _id: new ObjectId(blogId) });
-    var views = res == null ? 0 : res["views"];
-    await db
-      .collection("blogs")
-      .updateOne({ _id: new ObjectId(blogId) }, { $set: { views: views + 1 } });
+    if (session?.user) {
+      var views = res == null ? 0 : res["views"];
+      await db
+        .collection("blogs")
+        .updateOne(
+          { _id: new ObjectId(blogId) },
+          { $set: { views: views + 1 } }
+        );
+    }
     return res;
   } catch (e) {
     console.log("error is: ", e);

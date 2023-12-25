@@ -8,44 +8,18 @@ import BlogViewClient from "./blog_view_client";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
+import {Session} from "next-auth";
+import markedKatex from "marked-katex-extension";
 
-const parseLatexAndSepDrawings = async (htmlString: string) => {
+
+const sepDrawings = async (htmlString: string) => {
   // parses latex in an html string
   // and separates blog by images
   var res = "";
   var i = 0;
   const htmlSectionsSeppedByDrawings: string[] = [];
   while (i < htmlString.length - 1) {
-    if (htmlString[i] == "$" && htmlString[i + 1] == "$") {
-      // if block latex opener is spotted, find out where it ends
-      var j = i + 2;
-      var toBeLatexxed = "";
-      while (
-        j < htmlString.length - 1 &&
-        !(htmlString[j] == "$" && htmlString[j + 1] == "$")
-      ) {
-        toBeLatexxed += htmlString[j];
-        j++;
-      }
-      res +=
-        "<div class='katex-display-true'>" +
-        katex.renderToString(toBeLatexxed) +
-        "</div>";
-      i = j + 1;
-    } else if (htmlString[i] == "$") {
-      // if inline latex opener is spotted, find out where it ends
-      var j = i + 1;
-      var toBeLatexxed = "";
-      while (j < htmlString.length - 1 && !(htmlString[j] == "$")) {
-        toBeLatexxed += htmlString[j];
-        j++;
-      }
-      res +=
-        "<div class='katex-display-false'>" +
-        katex.renderToString(toBeLatexxed) +
-        "</div>";
-      i = j;
-    } else if (
+    if (
       htmlString[i] == "!" &&
       htmlString[i + 1] == "[" &&
       htmlString[i + 2] == "["
@@ -68,9 +42,7 @@ const parseLatexAndSepDrawings = async (htmlString: string) => {
   return htmlSectionsSeppedByDrawings;
 };
 
-const BlogView = async (props: { blog: Blog; passedId: string }) => {
-  const authh = await auth();
-
+const BlogView = async (props: { blog: Blog; passedId: string; authh: Session | null}) => {
   const marked = new Marked(
     markedHighlight({
       langPrefix: "hljs language-",
@@ -81,8 +53,9 @@ const BlogView = async (props: { blog: Blog; passedId: string }) => {
     })
   );
 
+  marked.use(markedKatex({throwOnError: false}));
   const htmlString = await marked.parse(props.blog.content);
-  const htmlSectionsSeppedByDrawings = await parseLatexAndSepDrawings(
+  const htmlSectionsSeppedByDrawings = await sepDrawings(
     htmlString
   );
 
@@ -95,7 +68,7 @@ const BlogView = async (props: { blog: Blog; passedId: string }) => {
               {" "}
               Written by {props.blog.name} on{" "}
               {props.blog.dateAdded.toLocaleDateString()}{" "}
-              {props.blog.email == authh?.user?.email ? (
+              {props.blog.email == props.authh?.user?.email ? (
                 <div className="ml-4 inline">
                   <Link href={"/api/blogs/delete-blog/" + props.blog.id}>
                     <Button variant={"destructive"} size={"icon"}>

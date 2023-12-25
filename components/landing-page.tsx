@@ -6,7 +6,7 @@ import { Suspense, useState } from "react";
 import Loading from "./loading_landing_cards";
 import { Badge } from "./ui/badge";
 import LoadingBlogPage from "./loading_blog_page";
-import { DiamondIcon, MoveRight } from "lucide-react";
+import { Diamond, DiamondIcon, MoveRight } from "lucide-react";
 import { getLatestBlogs } from "@/lib/blog/blogpost";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -52,7 +52,7 @@ const BlogCards = (props: {
         {!props.lastPage ? (
           <div>
             <button
-              className="mt-4 self-center dark:text-pink-300 text-pink-700"
+              className="mt-4 self-center dark:text-pink-300 text-pink-700 hover:dark:text-pink-100 hover:text-pink-900 transition-colors"
               onClick={async () => {
                 // add new blogs to blog array
                 const lastId: string = props.blogs[props.blogs.length - 1].id;
@@ -158,10 +158,10 @@ const LandingPage = (props: { res: Blog[] }) => {
                   <div
                     key={el.id}
                     onClick={() => router.replace(`/blogs/${el.id}`)}
-                    className="flex gap-2"
+                    className="flex gap-2 w-fit cursor-pointer hover:dark:text-pink-300 hover:text-pink-700 transition-colors"
                   >
-                    <DiamondIcon className="inline text-sm"></DiamondIcon>
-                    <div className="cursor-pointer">
+                    <Diamond className="inline text-xs"></Diamond>
+                    <div>
                       {getTitleFromContent(el.content)}
                     </div>
                   </div>
