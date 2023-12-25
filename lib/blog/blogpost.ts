@@ -116,7 +116,7 @@ export const getLatestBlogs: (
     //
     for await (const doc of cur) {
       resArray.push({
-        id: doc["_id"].toString(),
+        blogId: doc["_id"].toString(),
         name: doc["name"],
         email: doc["email"],
         content: doc["content"],
@@ -209,3 +209,13 @@ export const getUser = async (email: string) => {
     console.log(e);
   }
 };
+
+
+export const getLatestComments = async (blogId: string, lastCommentId: string | null) => {
+	if(lastCommentId) {
+		// fetch comments older than this
+	} else {
+		// fetch latest <pageLength>
+	}
+	return;
+}

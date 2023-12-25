@@ -2,7 +2,7 @@ import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 import { AppState, BinaryFiles } from "@excalidraw/excalidraw/types/types";
 
 export interface Blog {
-  id: string;
+  blogId: string;
   content: string;
   name: string;
   email: string;
@@ -20,7 +20,7 @@ export interface Excali {
 }
 
 export const initBlog: Blog = {
-  id: "",
+  blogId: "",
   content: "",
   name: "",
   email: "",
@@ -39,14 +39,23 @@ export function parseObjToBlog(el: any) {
   blog.category = el["category"];
   blog.views = el["views"];
   blog.likes = el["likes"];
-  blog.id = el["_id"].toString();
+  blog.blogId = el["_id"].toString();
   return blog;
+}
+
+export interface BlogComment {
+  commentId: string;
+  name: string;
+  email: string;
+  content: string;
+  dateAdded: Date;
 }
 
 // CONSTANTS
 //
 
 export const pageLengthLanding = 5;
+export const commentsPageLength = 5;
 
 export const categories = [
   "webdev",
@@ -60,4 +69,3 @@ export const categories = [
   "sociology",
   "coding",
 ];
-

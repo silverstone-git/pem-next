@@ -32,7 +32,7 @@ const BlogCards = (props: {
             // return each blog div here
             return (
               <div
-                key={blog.id}
+                key={blog.blogId}
                 className={`${
                   props.showCategory == blog.category ||
                   props.showCategory == "*"
@@ -55,7 +55,7 @@ const BlogCards = (props: {
               className="mt-4 self-center dark:text-pink-300 text-pink-700 hover:dark:text-pink-100 hover:text-pink-900 transition-colors"
               onClick={async () => {
                 // add new blogs to blog array
-                const lastId: string = props.blogs[props.blogs.length - 1].id;
+                const lastId: string = props.blogs[props.blogs.length - 1].blogId;
                 const newBlogs: Blog[] = await getLatestBlogs(lastId);
                 if (newBlogs.length < pageLengthLanding) {
                   props.setLastPage(true);
@@ -156,8 +156,8 @@ const LandingPage = (props: { res: Blog[] }) => {
               .map((el) => {
                 return (
                   <div
-                    key={el.id}
-                    onClick={() => router.replace(`/blogs/${el.id}`)}
+                    key={el.blogId}
+                    onClick={() => router.replace(`/blogs/${el.blogId}`)}
                     className="flex gap-2 w-fit cursor-pointer hover:dark:text-pink-300 hover:text-pink-700 transition-colors"
                   >
                     <Diamond className="inline text-xs"></Diamond>

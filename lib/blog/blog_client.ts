@@ -1,16 +1,13 @@
 "use client";
 
-import {ObjectId} from "mongodb";
-import clientPromise from "../mongodb";
-
 export function refreshLocal(resArray: any[]) {
   if (typeof window === "undefined") return;
   console.log("so the code is being run on the client");
   const blogsRn: any[] = JSON.parse(localStorage.getItem("blogs") ?? "[]");
   const newBlogObjects = resArray.map((el) => {
-    const id = el._id.toString();
+    const blogId = el._id.toString();
     const blogObj: any = {};
-    blogObj[id] = el;
+    blogObj[blogId] = el;
     return blogObj;
   });
   if (blogsRn && blogsRn.length > 0) {

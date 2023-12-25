@@ -7,6 +7,7 @@ import { Dialog, DialogTrigger } from "../ui/dialog";
 import LoginDialogContent from "../login-dialog-content";
 import { useTheme } from "next-themes";
 import {sendLike} from "@/lib/blog/blogpost";
+import BlogComments from "./blog_comments";
 
 const CommentButton = ({ onClick = () => {}, ...props }) => {
   return (
@@ -57,6 +58,7 @@ const BlogLikeBar = (props: { blogId: string; alreadyLiked: string[] | null }) =
   console.log("session data user is: ", session.data?.user);
   if (session.data?.user) {
     return (
+    <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-4 mt-7">
         {liked ? (
           <LikeButton filledHeart={true} />
@@ -80,7 +82,9 @@ const BlogLikeBar = (props: { blogId: string; alreadyLiked: string[] | null }) =
             //...
           }}
         />
-      </div>
+     </div>
+     {commentMode ? <BlogComments blogId={props.blogId} userObj={session.data.user} /> : null}
+</div>
     );
   } else {
     return (

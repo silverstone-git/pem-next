@@ -76,7 +76,7 @@ const BlogView = async (props: {
               {props.blog.dateAdded.toLocaleDateString()}{" "}
               {props.blog.email == props.authh?.user?.email ? (
                 <div className="ml-4 inline">
-                  <Link href={"/api/blogs/delete-blog/" + props.blog.id}>
+                  <Link href={"/api/blogs/delete-blog/" + props.blog.blogId}>
                     <Button variant={"destructive"} size={"icon"}>
                       <Trash></Trash>
                     </Button>
@@ -90,10 +90,10 @@ const BlogView = async (props: {
           </div>
         </div>
         <BlogViewClient
-          blogId={props.blog.id}
+          blogId={props.blog.blogId}
           htmlSectionsSeppedByDrawings={htmlSectionsSeppedByDrawings}
         />
-	<BlogLikeBar blogId={props.blog.id} alreadyLiked={alreadyLiked} />
+	<BlogLikeBar blogId={props.blog.blogId} alreadyLiked={alreadyLiked} />
       </div>
     </div>
   );
