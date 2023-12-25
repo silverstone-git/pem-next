@@ -1,16 +1,14 @@
 import { Blog } from "@/lib/models";
 import { Button } from "../ui/button";
-import katex from "katex";
-import { auth } from "@/app/auth";
 import Link from "next/link";
-import { Trash } from "lucide-react";
+import { Heart, MessageCircle, Trash } from "lucide-react";
 import BlogViewClient from "./blog_view_client";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
-import {Session} from "next-auth";
+import { Session } from "next-auth";
 import markedKatex from "marked-katex-extension";
-
+import BlogLikeBar from "./blog-like-bar";
 
 const sepDrawings = async (htmlString: string) => {
   // parses latex in an html string
@@ -42,7 +40,11 @@ const sepDrawings = async (htmlString: string) => {
   return htmlSectionsSeppedByDrawings;
 };
 
-const BlogView = async (props: { blog: Blog; passedId: string; authh: Session | null}) => {
+const BlogView = async (props: {
+  blog: Blog;
+  passedId: string;
+  authh: Session | null;
+}) => {
   const marked = new Marked(
     markedHighlight({
       langPrefix: "hljs language-",
@@ -53,11 +55,9 @@ const BlogView = async (props: { blog: Blog; passedId: string; authh: Session | 
     })
   );
 
-  marked.use(markedKatex({throwOnError: false}));
+  marked.use(markedKatex({ throwOnError: false }));
   const htmlString = await marked.parse(props.blog.content);
-  const htmlSectionsSeppedByDrawings = await sepDrawings(
-    htmlString
-  );
+  const htmlSectionsSeppedByDrawings = await sepDrawings(htmlString);
 
   return (
     <div className="flex flex-col items-center">
@@ -87,6 +87,7 @@ const BlogView = async (props: { blog: Blog; passedId: string; authh: Session | 
           blogId={props.blog.id}
           htmlSectionsSeppedByDrawings={htmlSectionsSeppedByDrawings}
         />
+	<BlogLikeBar blogId={props.blog.id} />
       </div>
     </div>
   );

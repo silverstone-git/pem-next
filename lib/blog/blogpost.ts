@@ -1,8 +1,25 @@
 "use server";
 import clientPromise from "@/lib/mongodb";
 import { Db, ObjectId } from "mongodb";
-import { Blog, Excali, pageLengthLanding, parseObjToBlog } from "../models";
+import {
+  Blog,
+  Excali,
+  pageLengthLanding,
+  parseObjToBlog,
+} from "../models";
 import { Session } from "next-auth";
+import { auth } from "@/app/auth";
+
+
+const writers: string[] = ["silverstone965@gmail.com"];
+
+export const isNotWriter = (inp: string) => {
+  if (writers.find((val: string, index: number) => val === inp)) {
+    return false;
+  } else {
+    return true;
+  }
+};
 
 const submitDrawings = async (
   db: Db,
@@ -46,6 +63,11 @@ export const submitBlogToDB = async (
   excalidrawings: Excali[]
 ) => {
   // auth and then send it to db
+  const session = await auth();
+  if (session?.user?.email == null || isNotWriter(session?.user?.email)) {
+	  console.log("______ 403 ______");
+	  return;
+  };
   const client = await clientPromise;
   try {
     console.log("client connection awaited");

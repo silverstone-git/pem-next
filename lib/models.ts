@@ -1,5 +1,5 @@
-import {ExcalidrawElement} from "@excalidraw/excalidraw/types/element/types";
-import {AppState, BinaryFiles} from "@excalidraw/excalidraw/types/types";
+import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
+import { AppState, BinaryFiles } from "@excalidraw/excalidraw/types/types";
 
 export interface Blog {
   id: string;
@@ -12,10 +12,10 @@ export interface Blog {
 }
 
 export interface Excali {
-	elements: ExcalidrawElement[];
-	appState: AppState;
-	scrollToContent: boolean;
-	files: BinaryFiles;
+  elements: ExcalidrawElement[];
+  appState: AppState;
+  scrollToContent: boolean;
+  files: BinaryFiles;
 }
 
 export const initBlog: Blog = {
@@ -40,7 +40,6 @@ export function parseObjToBlog(el: any) {
   return blog;
 }
 
-
 // CONSTANTS
 //
 
@@ -58,3 +57,4 @@ export const categories = [
   "sociology",
   "coding",
 ];
+
