@@ -32,9 +32,34 @@
   .blog-view-div li {
     @apply text-lg;
   }
+
   .blog-view-div code {
     @apply font-bold bg-zinc-200 dark:bg-zinc-700 rounded-md my-4 block w-fit py-2 px-4;
   }
+
+  .blog-view-div .hljs {
+    @apply dark:text-zinc-100 text-zinc-900;
+  }
+  .blog-view-div .hljs-tag,
+  .blog-view-div .hljs-name {
+    @apply dark:text-pink-100 text-pink-900;
+  }
+  .blog-view-div .hljs-attr {
+    @apply dark:text-slate-300 text-slate-700;
+  }
+  .blog-view-div .hljs-string {
+    @apply dark:text-orange-400 text-orange-700;
+  }
+  .blog-view-div .function_, .blog-view-div .class_  {
+	  @apply dark:text-emerald-400 text-emerald-600;
+  }
+  .blog-view-div .hljs-variable {
+	  @apply text-pink-700;
+  }
+  .blog-view-div .hljs-keyword {
+	  @apply dark:text-amber-400 text-amber-600;
+  }
+
   .blog-view-div blockquote {
     @apply p-4 my-8 bg-opacity-20 bg-pink-500 border-4 border-pink-800;
   }

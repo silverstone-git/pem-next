@@ -4,8 +4,8 @@ import { getDrawingsByBlogId } from "@/lib/blog/blogpost";
 import { Excali } from "@/lib/models";
 import { useEffect, useState } from "react";
 import LoadingCard from "../loading_card";
-import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
+import dynamic from "next/dynamic";
 
 const BlogViewClient = (props: {
   htmlSectionsSeppedByDrawings: string[];
@@ -32,8 +32,6 @@ const BlogViewClient = (props: {
 
   const { theme } = useTheme();
 
-
-
   return (
     <div>
       {props.htmlSectionsSeppedByDrawings.map(
@@ -46,7 +44,9 @@ const BlogViewClient = (props: {
                   <Excalidraw
                     initialData={drawings[curIndex]}
                     viewModeEnabled={true}
-		    theme={theme === "light" || theme === "dark" ? theme : "dark"}
+                    theme={
+                      theme === "light" || theme === "dark" ? theme : "dark"
+                    }
                   />
                 </div>
               ) : props.htmlSectionsSeppedByDrawings.length > 1 &&

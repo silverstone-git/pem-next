@@ -41,6 +41,10 @@ export default async function RootLayout({
           integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
           crossOrigin="anonymous"
         ></link>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+        ></link>
       </head>
 
       <body className={inter.className}>

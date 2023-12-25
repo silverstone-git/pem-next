@@ -1,12 +1,13 @@
 import { Blog } from "@/lib/models";
-import { Session } from "next-auth";
 import { Button } from "../ui/button";
 import katex from "katex";
 import { auth } from "@/app/auth";
 import Link from "next/link";
-import { marked } from "marked";
-import { EyeIcon, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import BlogViewClient from "./blog_view_client";
+import { Marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
 
 const parseLatexAndSepDrawings = async (htmlString: string) => {
   // parses latex in an html string
@@ -67,12 +68,18 @@ const parseLatexAndSepDrawings = async (htmlString: string) => {
   return htmlSectionsSeppedByDrawings;
 };
 
-const BlogView = async (props: {
-  session: Session;
-  blog: Blog;
-  passedId: string;
-}) => {
+const BlogView = async (props: { blog: Blog; passedId: string }) => {
   const authh = await auth();
+
+  const marked = new Marked(
+    markedHighlight({
+      langPrefix: "hljs language-",
+      highlight(code, lang, info) {
+        const language = hljs.getLanguage(lang) ? lang : "plaintext";
+        return hljs.highlight(code, { language }).value;
+      },
+    })
+  );
 
   const htmlString = await marked.parse(props.blog.content);
   const htmlSectionsSeppedByDrawings = await parseLatexAndSepDrawings(
