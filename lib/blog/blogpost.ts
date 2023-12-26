@@ -108,17 +108,17 @@ export const getLatestBlogs: (
   try {
     const db = client.db("pem");
     let cur;
-    if (lastBlogId == null) {
+    if (lastBlogId) {
       cur = db
         .collection("blogs")
-        .find({})
-        .sort({ _id: 1 })
+        .find({ _id: { $lt: new ObjectId(lastBlogId) } })
+        .sort({ _id: -1 })
         .limit(pageLengthLanding);
     } else {
       cur = db
         .collection("blogs")
-        .find({ _id: { $gt: new ObjectId(lastBlogId) } })
-        .sort({ _id: 1 })
+        .find({})
+        .sort({ _id: -1 })
         .limit(pageLengthLanding);
     }
     const resArray: Blog[] = [];
