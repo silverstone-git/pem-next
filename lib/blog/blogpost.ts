@@ -1,6 +1,13 @@
 "use server";
 import clientPromise from "@/lib/mongodb";
-import { CountDocumentsOptions, Db, Document, ObjectId, OptionalId, WithId } from "mongodb";
+import {
+  CountDocumentsOptions,
+  Db,
+  Document,
+  ObjectId,
+  OptionalId,
+  WithId,
+} from "mongodb";
 import {
   Blog,
   BlogComment,
@@ -72,7 +79,6 @@ export const submitBlogToDB = async (
   }
   const client = await clientPromise;
   try {
-    console.log("client connection awaited");
     const db = client.db("pem");
     const { insertedId } = await db.collection("blogs").insertOne({
       name: user.name,
@@ -154,9 +160,12 @@ export const getBlogById = async (blogId: string, session: Session | null) => {
         .collection("blogs")
         .findOneAndUpdate(
           { _id: new ObjectId(blogId) },
-          { $inc: { views: 1 } },
-          { returnOriginal: false }
+          { $inc: { views: 1 } }
         );
+      if (res) {
+        // since the old doc is fetched, not the updated one, updating the local copy as well ...
+        res["views"] = res["views"] + 1;
+      }
     } else {
       res = await db.collection("blogs").findOne({ _id: new ObjectId(blogId) });
     }
@@ -176,9 +185,10 @@ export const deleteBlogById = async (blogId: string) => {
     await db.collection("blogs").deleteOne({ _id: new ObjectId(blogId) });
     console.log("delete blog done, now, deleting drawings associated with it");
     await db.collection("drawings").deleteMany({ blogId: blogId });
-    console.log("deleted drawings as well");
+    console.log("deleted drawings as well, now, comments =>");
+    await db.collection("comments").deleteMany({ blogId: blogId });
   } catch (e) {
-    console.log("there was an error doing all that");
+    console.log("there was an error in deleting");
   } finally {
     //client.close();
   }
@@ -186,8 +196,6 @@ export const deleteBlogById = async (blogId: string) => {
 
 export const sendLike = async (blogId: string, userObj: User | undefined) => {
   if (!userObj?.email) return;
-  console.log("user email tbs is: ", userObj?.email);
-  console.log("blogid tbs is: ", blogId);
   const client = await clientPromise;
   try {
     const db = client.db("pem");
@@ -198,7 +206,7 @@ export const sendLike = async (blogId: string, userObj: User | undefined) => {
       .collection("blogs")
       .updateOne({ _id: new ObjectId(blogId) }, { $inc: { likes: 1 } });
   } catch (e) {
-    console.log("there was an error doing all that");
+    console.log("there was an error while liking");
   } finally {
     //client.close();
   }
@@ -226,7 +234,6 @@ export const getLatestComments: (
   const client = await clientPromise;
   const db = client.db("pem");
   var res: BlogComment[] = [];
-  console.log(lastCommentId ? "\nloading next page\n" : "\nfetching latest five\n");
   try {
     if (lastCommentId) {
       // fetch comments older than this
@@ -266,7 +273,6 @@ export const getLatestComments: (
   } catch (e) {
     console.log("an error occured while fetching comments: e");
   }
-  console.log("returning comments: ", res);
   return res;
 };
 
@@ -274,14 +280,12 @@ export const sendComment = async (comment: BlogComment) => {
   const client = await clientPromise;
   try {
     const db = client.db("pem");
-    const tbi: WithId<Document> = {...comment, _id: new ObjectId()};
+    const tbi: WithId<Document> = { ...comment, _id: new ObjectId() };
     delete tbi.commentId;
-    if(tbi.name == "") {
-	tbi.name = tbi.email;
+    if (tbi.name == "") {
+      tbi.name = tbi.email;
     }
-    await db
-      .collection("comments")
-      .insertOne(tbi);
+    await db.collection("comments").insertOne(tbi);
     console.log("comment inserted \\/");
   } catch (e) {
     console.log("an error occured while sending comment: ", e);

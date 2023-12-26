@@ -59,7 +59,6 @@ const BlogView = async (props: {
   marked.use(markedKatex({ throwOnError: false }));
   const htmlString = await marked.parse(props.blog.content);
   const htmlSectionsSeppedByDrawings = await sepDrawings(htmlString);
-  console.log("server session, ie, auth() is: ", props.authh);
   var alreadyLiked = null;
   if(props.authh?.user?.email) {
   	alreadyLiked = (await getUser(props.authh.user.email))?.liked;

@@ -72,7 +72,6 @@ const BlogLikeBar = (props: {
   );
 
   const session = useSession();
-  console.log("session data user is: ", session.data?.user);
   if (session.data?.user) {
     return (
       <div className="flex flex-col gap-4">

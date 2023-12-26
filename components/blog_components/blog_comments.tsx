@@ -23,7 +23,6 @@ const CommentInput = (props: {
         onSubmit={(e: any) => {
           e.preventDefault();
           e.target.reset();
-          console.log("entered comment is: ", commentEntered);
           const curDate: Date = new Date();
           const newComment: BlogComment = {
             commentId: "",
@@ -64,13 +63,6 @@ const BlogComments = (props: { blogId: string; userObj: User }) => {
   const [lastPage, setLastPage] = useState(false);
 
   const getNextPage = async (blogId: string) => {
-    if (blogComments.length > 0) {
-      console.log(
-        "last blog of which earlier is to be fetched is: ",
-        blogComments[blogComments.length - 1]
-      );
-    }
-    console.log("blog comments length during current getNext is: ", blogComments.length);
     const res = await getLatestComments(
       props.blogId,
       blogComments.length > 0

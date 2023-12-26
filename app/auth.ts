@@ -18,4 +18,5 @@ export const {
 } = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
   providers: [GitHub, Google, EmailProvider(emailOptions)],
+  trustHost: true,
 });
