@@ -226,25 +226,33 @@ export const getLatestComments: (
   const client = await clientPromise;
   const db = client.db("pem");
   var res: BlogComment[] = [];
+  console.log(lastCommentId ? "\nloading next page\n" : "\nfetching latest five\n");
   try {
     if (lastCommentId) {
       // fetch comments older than this
       const docs = await db
         .collection("comments")
-        .find({ blogId: blogId, _id: { $gt: new ObjectId(lastCommentId) } })
-        .sort({ _id: 1 })
+        .find({ blogId: blogId, _id: { $lt: new ObjectId(lastCommentId) } })
+        .sort({ _id: -1 })
         .limit(commentsPageLength)
         .toArray();
-      res = docs.map((el: unknown) => el as BlogComment);
+      res = docs.map((el: WithId<Document>) => {
+        return {
+          commentId: el._id.toString(),
+          name: el.name,
+          email: el.email,
+          dateAdded: el.dateAdded,
+          content: el.content,
+        } as BlogComment;
+      });
     } else {
       // fetch latest <pageLength>
       const docs = await db
         .collection("comments")
         .find({ blogId: blogId })
-        .sort({ _id: 1 })
+        .sort({ _id: -1 })
         .limit(commentsPageLength)
         .toArray();
-      console.log("received docs : ", docs);
       res = docs.map((el: WithId<Document>) => {
         return {
           commentId: el._id.toString(),

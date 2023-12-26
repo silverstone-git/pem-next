@@ -9,33 +9,42 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 
-const CommentInput = (props: {blogComments: BlogComment[]; setBlogComments: any, userObj: User}) => {
+const CommentInput = (props: {
+  blogComments: BlogComment[];
+  setBlogComments: any;
+  userObj: User;
+  blogId: string;
+}) => {
   const [commentEntered, setCommentEntered] = useState("");
   return (
     <div>
       <form
         action=""
-        onSubmit={(e) => {
+        onSubmit={(e: any) => {
           e.preventDefault();
+          e.target.reset();
           console.log("entered comment is: ", commentEntered);
-	  const newComment: BlogComment = {
-	  	commentId: "",
-		name: props.userObj.name ?? "",
-		email: props.userObj.email ?? "",
-		dateAdded: new Date(),
-		content: commentEntered
-	  }
-	  props.setBlogComments([...props.blogComments, newComment])
-	  console.log("sending comment");
-	  sendComment(newComment).then((val) => {
-	  console.log("sent comment");
-	  });
+          const curDate: Date = new Date();
+          const newComment: BlogComment = {
+            commentId: "",
+            blogId: props.blogId,
+            name: props.userObj.name ?? "",
+            email: props.userObj.email ?? "",
+            dateAdded: curDate,
+            content: commentEntered,
+          };
+          props.setBlogComments([newComment, ...props.blogComments]);
+          console.log("sending comment");
+          sendComment(newComment).then((val) => {
+            console.log("sent comment");
+          });
         }}
       >
-        <Label className="mt-7" htmlFor="comment-input">
+        <Label className="mt-6" htmlFor="commshesent-input">
           Enter your comment <ArrowRight className="inline" />{" "}
         </Label>
         <Input
+	className="mt-2"
           type="text"
           id="comment-input"
           onChange={(e) => setCommentEntered(e.target.value.trim())}
@@ -52,35 +61,69 @@ const BlogComments = (props: { blogId: string; userObj: User }) => {
   const [loadingComments, setLoadingComments] = useState(true);
   const initCommentsArr: BlogComment[] = [];
   const [blogComments, setBlogComments] = useState(initCommentsArr);
-  useEffect(() => {
-    getLatestComments(
+  const [lastPage, setLastPage] = useState(false);
+
+  const getNextPage = async (blogId: string) => {
+    if (blogComments.length > 0) {
+      console.log(
+        "last blog of which earlier is to be fetched is: ",
+        blogComments[blogComments.length - 1]
+      );
+    }
+    console.log("blog comments length during current getNext is: ", blogComments.length);
+    const res = await getLatestComments(
       props.blogId,
       blogComments.length > 0
         ? blogComments[blogComments.length - 1].commentId
         : null
-    ).then((val) => {
-      setLoadingComments(false);
-      setBlogComments([...blogComments, ...val]);
-    });
-  }, []);
+    );
+    setLoadingComments(false);
+    setBlogComments([...blogComments, ...res]);
+    if (res.length < commentsPageLength) {
+      setLastPage(true);
+    }
+  };
+
+  useEffect(() => {
+    getNextPage(props.blogId);
+  }, [props.blogId]);
   if (loadingComments) {
     return (
       <div className="w-full h-[40vh] flex flex-col gap-4">
+        <CommentInput
+          blogComments={blogComments}
+          setBlogComments={setBlogComments}
+          userObj={props.userObj}
+          blogId={props.blogId}
+        />
         {Array.from(Array(commentsPageLength - 3).keys()).map((el, index) => {
           return <LoadingCard key={index} />;
         })}
-        <CommentInput blogComments={blogComments} setBlogComments={setBlogComments} userObj={props.userObj} />
       </div>
     );
   } else {
     return (
       <div className="flex flex-col gap-6 py-8">
+        <CommentInput
+          blogComments={blogComments}
+          setBlogComments={setBlogComments}
+          userObj={props.userObj}
+          blogId={props.blogId}
+        />
         {blogComments.map((el, index) => {
           return (
             <CommentCard key={index} blogComment={el} userObj={props.userObj} />
           );
         })}
-        <CommentInput blogComments={blogComments} setBlogComments={setBlogComments} userObj={props.userObj} />
+        {lastPage ? null : (
+          <Button
+            className="my-4"
+            variant={"outline"}
+            onClick={() => getNextPage(props.blogId)}
+          >
+            Load More
+          </Button>
+        )}
       </div>
     );
   }

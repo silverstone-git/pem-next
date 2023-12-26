@@ -17,13 +17,13 @@ import { Accordion } from "../ui/accordion";
 
 const CommentButton = ({ onClick = () => {}, ...props }) => {
   return (
-    <button
+    <div
       onClick={onClick}
       className="py-3 px-4 flex flex-row gap-2 dark:text-zinc-100 text-zinc-900 hover:dark:text-pink-300 hover:text-pink-700 border border-zinc-700 rounded-md"
     >
       <MessageCircle className="inline"></MessageCircle>
       <div>Comment</div>
-    </button>
+    </div>
   );
 };
 

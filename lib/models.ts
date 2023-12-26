@@ -45,6 +45,7 @@ export function parseObjToBlog(el: any) {
 
 export interface BlogComment {
   commentId: string;
+  blogId: string;
   name: string;
   email: string;
   content: string;
