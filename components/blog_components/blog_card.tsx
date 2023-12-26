@@ -17,7 +17,7 @@ const BlogCardLanding = async (props: { blog: Blog; setLoadingBlog: any }) => {
       <div
         className="mt-4"
         onClick={() => {
-          router.replace(`/blogs/${props.blog.id}`);
+          router.replace(`/blogs/${props.blog.blogId}`);
           props.setLoadingBlog(true);
         }}
       >

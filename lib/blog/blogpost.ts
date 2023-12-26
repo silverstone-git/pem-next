@@ -1,7 +1,13 @@
 "use server";
 import clientPromise from "@/lib/mongodb";
-import { Db, ObjectId } from "mongodb";
-import { Blog, Excali, pageLengthLanding } from "../models";
+import { CountDocumentsOptions, Db, Document, ObjectId, OptionalId, WithId } from "mongodb";
+import {
+  Blog,
+  BlogComment,
+  Excali,
+  commentsPageLength,
+  pageLengthLanding,
+} from "../models";
 import { Session, User } from "next-auth";
 import { auth } from "@/app/auth";
 
@@ -210,12 +216,66 @@ export const getUser = async (email: string) => {
   }
 };
 
+export const getLatestComments: (
+  blogId: string,
+  lastCommentId: string | null
+) => Promise<BlogComment[]> = async (
+  blogId: string,
+  lastCommentId: string | null
+) => {
+  const client = await clientPromise;
+  const db = client.db("pem");
+  var res: BlogComment[] = [];
+  try {
+    if (lastCommentId) {
+      // fetch comments older than this
+      const docs = await db
+        .collection("comments")
+        .find({ blogId: blogId, _id: { $gt: new ObjectId(lastCommentId) } })
+        .sort({ _id: 1 })
+        .limit(commentsPageLength)
+        .toArray();
+      res = docs.map((el: unknown) => el as BlogComment);
+    } else {
+      // fetch latest <pageLength>
+      const docs = await db
+        .collection("comments")
+        .find({ blogId: blogId })
+        .sort({ _id: 1 })
+        .limit(commentsPageLength)
+        .toArray();
+      console.log("received docs : ", docs);
+      res = docs.map((el: WithId<Document>) => {
+        return {
+          commentId: el._id.toString(),
+          name: el.name,
+          email: el.email,
+          dateAdded: el.dateAdded,
+          content: el.content,
+        } as BlogComment;
+      });
+    }
+  } catch (e) {
+    console.log("an error occured while fetching comments: e");
+  }
+  console.log("returning comments: ", res);
+  return res;
+};
 
-export const getLatestComments = async (blogId: string, lastCommentId: string | null) => {
-	if(lastCommentId) {
-		// fetch comments older than this
-	} else {
-		// fetch latest <pageLength>
-	}
-	return;
-}
+export const sendComment = async (comment: BlogComment) => {
+  const client = await clientPromise;
+  try {
+    const db = client.db("pem");
+    const tbi: WithId<Document> = {...comment, _id: new ObjectId()};
+    delete tbi.commentId;
+    if(tbi.name == "") {
+	tbi.name = tbi.email;
+    }
+    await db
+      .collection("comments")
+      .insertOne(tbi);
+    console.log("comment inserted \\/");
+  } catch (e) {
+    console.log("an error occured while sending comment: ", e);
+  }
+};

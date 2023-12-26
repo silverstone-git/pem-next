@@ -6,8 +6,14 @@ import { useState } from "react";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import LoginDialogContent from "../login-dialog-content";
 import { useTheme } from "next-themes";
-import {sendLike} from "@/lib/blog/blogpost";
+import { sendLike } from "@/lib/blog/blogpost";
 import BlogComments from "./blog_comments";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@radix-ui/react-accordion";
+import { Accordion } from "../ui/accordion";
 
 const CommentButton = ({ onClick = () => {}, ...props }) => {
   return (
@@ -32,15 +38,19 @@ const LikeButton = ({
   return (
     <div
       onClick={onClick}
-      className={`py-3 px-4 flex flex-row gap-2 dark:text-zinc-100 text-zinc-900 ${filledHeart ? "" :  "hover:dark:text-pink-300 hover:text-pink-700 cursor-pointer"} border border-zinc-700 rounded-lg ${className}`}
+      className={`py-3 px-4 flex flex-row gap-2 dark:text-zinc-100 text-zinc-900 ${
+        filledHeart
+          ? ""
+          : "hover:dark:text-pink-300 hover:text-pink-700 cursor-pointer"
+      } border border-zinc-700 rounded-lg ${className}`}
     >
       <Heart
         fill={
           filledHeart && resolvedTheme === "dark"
             ? "white"
-            : (filledHeart
+            : filledHeart
             ? "black"
-            : undefined)
+            : undefined
         }
         className={`inline mr-2`}
       ></Heart>
@@ -49,42 +59,64 @@ const LikeButton = ({
   );
 };
 
-const BlogLikeBar = (props: { blogId: string; alreadyLiked: string[] | null }) => {
+const BlogLikeBar = (props: {
+  blogId: string;
+  alreadyLiked: string[] | null;
+}) => {
   "use client";
   const [commentMode, setCommentMode] = useState(false);
-  const [liked, setLiked] = useState(props.alreadyLiked == null ? false : props.alreadyLiked.find((val) => props.blogId == val));
+  const [liked, setLiked] = useState(
+    props.alreadyLiked == null
+      ? false
+      : props.alreadyLiked.find((val) => props.blogId == val)
+  );
 
   const session = useSession();
   console.log("session data user is: ", session.data?.user);
   if (session.data?.user) {
     return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-row gap-4 mt-7">
-        {liked ? (
-          <LikeButton filledHeart={true} />
-        ) : (
-          <LikeButton
-            onClick={async () => {
-              console.log("like button was clicked as loggedin");
-              setLiked(true);
-              sendLike(props.blogId, session.data?.user).then((val) => {
-	      console.log("<<stop loading>>\n\n like action successfully performed");
-	      });
-            }}
-          />
-        )}
-        <CommentButton
-          onClick={() => {
-            console.log("comment button was clicked as loggedin");
-            if (session?.data?.user) {
-              setCommentMode(true);
-            }
-            //...
-          }}
-        />
-     </div>
-     {commentMode ? <BlogComments blogId={props.blogId} userObj={session.data.user} /> : null}
-</div>
+      <div className="flex flex-col gap-4">
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <div className="flex flex-row gap-4 mt-7">
+              {liked ? (
+                <LikeButton filledHeart={true} />
+              ) : (
+                <LikeButton
+                  onClick={async () => {
+                    console.log("like button was clicked as loggedin");
+                    setLiked(true);
+                    sendLike(props.blogId, session.data?.user).then((val) => {
+                      console.log(
+                        "<<stop loading>>\n\n like action successfully performed"
+                      );
+                    });
+                  }}
+                />
+              )}
+              <AccordionTrigger>
+                <CommentButton
+                  onClick={() => {
+                    console.log("comment button was clicked as loggedin");
+                    if (session?.data?.user) {
+                      setCommentMode(true);
+                    }
+                    //...
+                  }}
+                />
+              </AccordionTrigger>
+            </div>
+            <AccordionContent>
+              {commentMode ? (
+                <BlogComments
+                  blogId={props.blogId}
+                  userObj={session.data.user}
+                />
+              ) : null}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
     );
   } else {
     return (
