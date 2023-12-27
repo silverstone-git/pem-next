@@ -69,7 +69,7 @@
     @apply p-4 my-8 bg-opacity-20 bg-pink-500 border-4 border-pink-800;
   }
   .blog-view-div .katex {
-    @apply text-xl md:overflow-clip overflow-scroll;
+    @apply text-xl md:overflow-clip overflow-x-scroll overflow-y-clip;
   }
   .blog-view-div .katex-display-false {
     @apply inline-block text-xl;
