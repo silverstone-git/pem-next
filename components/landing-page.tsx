@@ -22,8 +22,8 @@ const BlogCards = (props: {
   setLastPage: any;
 }) => {
   return (
-    <div className="w-full md:w-1/2 lg:w-6/12 h-full text-xl flex flex-col items-center">
-      <div className="text-lg py-4 text-pink-700 dark:text-pink-300">
+    <div className="w-full md:w-1/2 lg:w-6/12 h-full text-xl flex flex-col items-center px-4 md:px-0">
+      <div className="text-lg py-4 text-pink-700 dark:text-pink-300 self-start">
         RECENT BLOGS
       </div>
       <div className="flex flex-col gap-16 w-full">
@@ -115,7 +115,7 @@ const LandingPage = (props: { res: Blog[] }) => {
     <LoadingBlogPage />
   ) : (
     <div>
-      <div className="flex flex-col md:flex-row justify-normal md:justify-center gap-16 md:gap-4 pt-16">
+      <div className="flex flex-col md:flex-row justify-normal md:justify-center gap-16 md:gap-4 py-4 md:py-16">
         <BlogCards
           blogs={blogsArr}
           lastPage={lastPage}
@@ -125,7 +125,7 @@ const LandingPage = (props: { res: Blog[] }) => {
           setBlogs={setBlogsArr}
           setLastPage={setLastPage}
         />
-        <div className="w-full md:w-1/3 lg:w-3/12">
+        <div className="w-full md:w-1/3 lg:w-3/12 px-4 md:px-0">
           <div className="text-pink-700 dark:text-pink-300 py-4">
             TOP CATEGORIES
           </div>

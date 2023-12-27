@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3054",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3054",
     "lint": "next lint"
   },
   "dependencies": {
@@ -34,7 +34,6 @@
     "nodemailer": "^6.9.7",
     "react": "^18",
     "react-dom": "^18",
-    "react-markdown": "^9.0.1",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7"
   },

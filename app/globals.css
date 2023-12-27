@@ -24,10 +24,10 @@
     list-style-type: square;
   }
   .blog-view-div h2 {
-    @apply text-3xl mt-7 mb-3 hover:dark:text-pink-300 hover:text-pink-700 cursor-pointer;
+    @apply text-2xl md:text-3xl mt-7 mb-3 hover:dark:text-pink-300 hover:text-pink-700 cursor-pointer;
   }
   .blog-view-div h1 {
-    @apply text-5xl mt-7 mb-3 hover:dark:text-pink-300 hover:text-pink-700;
+    @apply text-3xl md:text-5xl mt-7 mb-3 hover:dark:text-pink-300 hover:text-pink-700;
   }
 
   .blog-view-div h2:hover:before {
@@ -39,7 +39,7 @@
   }
 
   .blog-view-div code {
-    @apply font-bold bg-zinc-200 dark:bg-zinc-700 rounded-md my-4 block w-fit py-2 px-4;
+    @apply font-bold bg-zinc-200 dark:bg-zinc-700 rounded-md my-4 block w-full md:w-fit py-2 px-4 overflow-scroll md:overflow-auto;
   }
 
   .blog-view-div .hljs {

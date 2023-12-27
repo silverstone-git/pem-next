@@ -66,15 +66,15 @@ const BlogView = async (props: {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-full md:w-11/12 lg:w-2/3 blog-view-div">
-        <div className="italic font-bold my-6">
+      <div className="px-8 w-full md:w-11/12 lg:w-2/3 blog-view-div">
+        <div className="italic font-bold text-sm md:text-md my-6">
           <div className="flex flex-row gap-4">
             <div>
               {" "}
               Written by {props.blog.name} on{" "}
               {props.blog.dateAdded.toLocaleDateString()}{" "}
               {props.blog.email == props.authh?.user?.email ? (
-                <div className="ml-4 inline">
+                <div className="ml-4 hidden md:inline">
                   <Link href={"/api/blogs/delete-blog/" + props.blog.blogId}>
                     <Button variant={"destructive"} size={"icon"}>
                       <Trash></Trash>
