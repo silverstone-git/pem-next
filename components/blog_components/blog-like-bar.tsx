@@ -46,11 +46,11 @@ const LikeButton = ({
     >
       <Heart
         fill={
-          filledHeart && resolvedTheme === "dark"
-            ? "white"
-            : filledHeart
-            ? "black"
-            : undefined
+          filledHeart
+            ? resolvedTheme == "dark"
+	    ? "white"
+            : "black"
+	    : resolvedTheme == "dark" ? "black" : "white"
         }
         className={`inline mr-2`}
       ></Heart>
