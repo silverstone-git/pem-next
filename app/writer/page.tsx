@@ -5,7 +5,7 @@ const writerPage = async () => {
   // this is the writer page, auth the guy and let him
   // ask the guy for the md file and it'll upload
   const session = await auth();
-  if (session?.user?.email === "silverstone965@gmail.com") {
+  if (process.env.EMAILS_EDITORS!.split(";").findIndex((val) => session?.user?.email == val) != -1 ) {
     return (
       <div className="p-4">
         <SubmissionComponent></SubmissionComponent>
