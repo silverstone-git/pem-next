@@ -10,6 +10,8 @@ import { Session } from "next-auth";
 import markedKatex from "marked-katex-extension";
 import BlogLikeBar from "./blog-like-bar";
 import { getUser } from "@/lib/blog/blogpost";
+import DOMPurify from "isomorphic-dompurify";
+
 
 const sepDrawings = async (htmlString: string) => {
   // parses latex in an html string
@@ -58,7 +60,8 @@ const BlogView = async (props: {
 
   marked.use(markedKatex({ throwOnError: false }));
   const htmlString = await marked.parse(props.blog.content);
-  const htmlSectionsSeppedByDrawings = await sepDrawings(htmlString);
+  const htmlPureString = DOMPurify.sanitize(htmlString);
+  const htmlSectionsSeppedByDrawings = await sepDrawings(htmlPureString);
   var alreadyLiked = null;
   if (props.authh?.user?.email) {
     alreadyLiked = (await getUser(props.authh.user.email))?.liked;
@@ -97,6 +100,7 @@ const BlogView = async (props: {
         </div>
         <BlogViewClient
           blogId={props.blog.blogId}
+          markdownText={props.blog.content}
           htmlSectionsSeppedByDrawings={htmlSectionsSeppedByDrawings}
         />
         <BlogLikeBar blogId={props.blog.blogId} alreadyLiked={alreadyLiked} />
