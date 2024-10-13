@@ -100,6 +100,7 @@ const BlogView = async (props: {
         </div>
         <BlogViewClient
           blogId={props.blog.blogId}
+          authorEmail={props.blog.email}
           markdownText={props.blog.content}
           htmlSectionsSeppedByDrawings={htmlSectionsSeppedByDrawings}
         />

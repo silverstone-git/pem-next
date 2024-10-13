@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 const BlogViewClient = (props: {
   htmlSectionsSeppedByDrawings: string[];
   blogId: string;
+  authorEmail: string;
   markdownText: string;
 }) => {
 
@@ -113,12 +114,12 @@ const BlogViewClient = (props: {
           (el: string, curIndex: number) => {
             return (
               <div key={curIndex}>
-                <div className="flex justify-center items-center" > <div className="flex gap-4 cursor-pointer" onClick={() => setEditMode(true)}>
+              {session.data?.user?.email == props.authorEmail ? <div className="flex justify-center items-center" > <div className="flex gap-4 cursor-pointer" onClick={() => setEditMode(true)}>
                   <Edit2 />
                   <div>
                     Edit
                   </div>
-                </div> </div>
+                </div> </div> : null}
                 <div dangerouslySetInnerHTML={{ __html: el }}></div>
                 {drawings.length > 0 && curIndex < drawings.length ? (
                   <div className="h-[50vh] w-full">
