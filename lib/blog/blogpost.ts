@@ -100,6 +100,43 @@ export const submitBlogToDB = async (
   }
 };
 
+export const submitEditUser =  async (blogId: string, markdown: string): Promise<{statusCode: number}> => {
+
+  // check if user is the author of the blogId
+
+  const session = await auth();
+  const email = session?.user?.email;
+  if(!email) {
+    console.log("not gonna happen");
+    return {statusCode: 403};
+  }
+  const client = await clientPromise;
+  try {
+    console.log("     okkkk   updatingzz")
+    const db = client.db("pem");
+    const filter = { _id: new ObjectId(blogId), email };
+    const res = await db
+      .collection("blogs")
+      .findOneAndUpdate(
+        filter,
+        { $set: { content: markdown } }
+    );
+    if(!res) {
+      console.log("there was no such doc");
+      return {statusCode: 404};
+    }
+    console.log("update done");
+    console.log("res: ", res);
+    return {statusCode: 204};
+  } catch (e) {
+    console.log("error is: ", e);
+    return {statusCode: 500};
+  } finally {
+    //client.close();
+  }
+
+}
+
 export const getLatestBlogs: (
   lastBlogId: string | null
 ) => Promise<Blog[]> = async (lastBlogId: string | null = "0") => {
