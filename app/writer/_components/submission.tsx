@@ -6,12 +6,17 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Excali } from "@/lib/models";
 import { Input } from "@/components/ui/input";
+import CategorySelect from "@/components/category-select";
+
+import { toast } from "sonner";
+import LoadingSpinner from "@/components/spinner";
 
 const SubmissionComponent = () => {
   const [fileStr, setFileStr] = useState("");
-  const [category, setCatgory] = useState("");
+  const [category, setCategory] = useState("");
   const initExcaliDrawings: Excali[] = [];
   const [excalidrawings, setExcalidrawings] = useState(initExcaliDrawings);
+  const [loadingSubmission, setLoadingSubmission] = useState(false);
   const session = useSession();
   const router = useRouter();
   const userObj = {
@@ -107,11 +112,18 @@ const SubmissionComponent = () => {
       <div className="flex flex-col gap-4 w-[50%]">
         <form
           className="flex flex-col gap-4"
-          onSubmit={() => {
+          onSubmit={(e: any) => {
+            e.preventDefault();
+            console.log("submitting blog....");
+            setLoadingSubmission(true);
             submitBlogToDB(userObj, fileStr, category, excalidrawings).then(
               () => {
-                console.log("blog submitted successfully!");
-                router.replace("/");
+                // chakka ghoomna band
+                setLoadingSubmission(false);
+                toast("Blog submitted successfully!")
+                setCategory("");
+                setFileStr("");
+                setExcalidrawings([]);
               }
             );
           }}
@@ -128,17 +140,15 @@ const SubmissionComponent = () => {
             ></Input>
           </div>
           <div className="flex flex-col gap-2">
+
+
             <label htmlFor="blog-category-input-field">
               Write down a category for this article
             </label>
-            <Input
-              id="blog-category-input-field"
-              onChange={(event) => {
-                setCatgory(event.target.value.trim());
-              }}
-              type="text"
-              required
-            ></Input>
+
+            <CategorySelect setCategory={setCategory} />
+
+
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="file-picker-images">
@@ -151,7 +161,7 @@ const SubmissionComponent = () => {
               multiple={true}
             />
           </div>
-          <Button type="submit">Submit blog</Button>
+          {loadingSubmission ? <div className="flex justify-center items-center w-full"> <LoadingSpinner /> </div> : <Button type="submit">Submit blog</Button>}
         </form>
         {/*<Button
           onClick={() => {

@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Braces, CircleUser, Instagram, Mail } from "lucide-react";
 import Link from "next/link";
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -99,6 +100,7 @@ export default async function RootLayout({
             </Link>
           </div>
         </div>
+        <Toaster />
       </body>
     </html>
   );

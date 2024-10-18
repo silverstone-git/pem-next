@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import LoadingCard from "../loading_card";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
-import { Marked } from "marked";
+import { Renderer, Marked } from "marked";
 import markedKatex from "marked-katex-extension";
 import DOMPurify from "isomorphic-dompurify";
 import { markedHighlight } from "marked-highlight";
@@ -29,6 +29,37 @@ const BlogViewClient = (props: {
 
   const [markdownEdit, setMarkdownEdit] = useState(props.markdownText);
 
+  const renderer = new Renderer();
+
+  // Override function
+function postprocess(html: string) {
+  return DOMPurify.sanitize(html);
+}
+
+  renderer.heading = ( text: string, level: number, raw: string) => {
+    const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+
+    return `
+            <h${level}>
+              <a name="${escapedText}" class="anchor" href="#${escapedText}">
+                <span class="header-link"></span>
+              </a>
+              ${text}
+            </h${level}>`;
+  };
+
+
+  renderer.image = (href: string, title: string, text: string) => {
+    if(text.toLowerCase().includes('video')) {
+      // after video found, render video tag instead
+      console.log("returning video");
+      return `<video alt=${title} src=${href}></video>`
+    } else {
+      console.log("returning image");
+      return `<img alt=${title} src=${href}></img>`
+    }
+  }
+
   const marked = new Marked(
     markedHighlight({
       langPrefix: "hljs language-",
@@ -38,6 +69,10 @@ const BlogViewClient = (props: {
       },
     })
   );
+
+  marked.use({hooks: { postprocess }});
+
+  marked.setOptions({ renderer })
 
   const Excalidraw = dynamic(
     async () => (await import("@excalidraw/excalidraw")).Excalidraw,
@@ -65,7 +100,7 @@ const BlogViewClient = (props: {
 
   if(editMode) {
     return <div className="flex flex-col gap-4 w-full">
-        <textarea 
+        <textarea
           value={markdownEdit}
           onChange={(e => handleMarkdownChange(e.target.value))}
           placeholder='Khaali Blog Mat Daalna'
@@ -87,7 +122,7 @@ const BlogViewClient = (props: {
               console.log("marked is: ", marked);
             }
           }}>Generate Preview</div>
-          <div dangerouslySetInnerHTML={{__html: htmlStringEditPreview}} ></div>   
+          <div dangerouslySetInnerHTML={{__html: htmlStringEditPreview}} ></div>
           <div className="py-2 px-4 bg-zinc-800 text-zinc-200 cursor-pointer rounded" onClick={async () => {
             // get user session and submit to api
             const { statusCode } = await submitEditUser(
@@ -104,7 +139,7 @@ const BlogViewClient = (props: {
           }} >
             Save Changes
           </div>
-          
+
         </div>
       </div>
   } else {

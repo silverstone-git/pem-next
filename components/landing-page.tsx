@@ -151,7 +151,7 @@ const LandingPage = (props: { res: Blog[] }) => {
           </div>
           <div className="flex gap-3 flex-col">
             {blogsArr
-              .sort((blogA, blogB) => blogB.views - blogA.views)
+              .toSorted((blogA, blogB) => blogB.views - blogA.views)
               .slice(0, 5)
               .map((el) => {
                 return (

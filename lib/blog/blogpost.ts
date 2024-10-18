@@ -65,6 +65,12 @@ export const getDrawingsByBlogId: (
   }
 };
 
+
+async function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 export const submitBlogToDB = async (
   user: { name: string; email: string },
   blogContent: string,
@@ -72,6 +78,13 @@ export const submitBlogToDB = async (
   excalidrawings: Excali[]
 ) => {
   // auth and then send it to db
+  //
+  //
+  /*
+  console.log("someone cooked here")
+  await delay(5000);
+  return 0;
+  */
   const session = await auth();
   if (session?.user?.email == null || isNotWriter(session?.user?.email)) {
     console.log("______ 403 ______");
