@@ -1,64 +1,41 @@
 "use client";
 
-import { getDrawingsByBlogId, submitEditUser } from "@/lib/blog/blogpost";
+import { submitEditUser } from "@/lib/blog/blogpost";
 import { Excali } from "@/lib/models";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LoadingCard from "../loading_card";
 import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
-import { Renderer, Marked } from "marked";
+import { Marked } from "marked";
 import markedKatex from "marked-katex-extension";
 import DOMPurify from "isomorphic-dompurify";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
 import { Edit2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import renderer from "@/lib/blog/renderer";
 
 const BlogViewClient = (props: {
-  htmlSectionsSeppedByDrawings: string[];
   blogId: string;
   authorEmail: string;
   markdownText: string;
+  htmlPureString: string;
 }) => {
 
   const session = useSession();
-  const initialDrawings: Excali[] = [];
-  const [drawings, setDrawings] = useState(initialDrawings);
   const [editMode, setEditMode] = useState(false);
   const [htmlStringEditPreview, setHTMLStringEditPreview] = useState("");
 
   const [markdownEdit, setMarkdownEdit] = useState(props.markdownText);
 
-  const renderer = new Renderer();
-
-  // Override function
-function postprocess(html: string) {
-  return DOMPurify.sanitize(html);
-}
-
-  renderer.heading = ( text: string, level: number, raw: string) => {
-    const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
-
-    return `
-            <h${level}>
-              <a name="${escapedText}" class="anchor" href="#${escapedText}">
-                <span class="header-link"></span>
-              </a>
-              ${text}
-            </h${level}>`;
-  };
 
 
-  renderer.image = (href: string, title: string, text: string) => {
-    if(text.toLowerCase().includes('video')) {
-      // after video found, render video tag instead
-      console.log("returning video");
-      return `<video alt=${title} src=${href}></video>`
-    } else {
-      console.log("returning image");
-      return `<img alt=${title} src=${href}></img>`
-    }
+  const handleMarkdownChange = async (val: string) => {
+    console.log("change: ", val);
+    setMarkdownEdit(val);
   }
+
+  const { theme } = useTheme();
 
   const marked = new Marked(
     markedHighlight({
@@ -69,33 +46,6 @@ function postprocess(html: string) {
       },
     })
   );
-
-  marked.use({hooks: { postprocess }});
-
-  marked.setOptions({ renderer })
-
-  const Excalidraw = dynamic(
-    async () => (await import("@excalidraw/excalidraw")).Excalidraw,
-    {
-      ssr: false,
-    }
-  );
-
-  useEffect(() => {
-    if (props.htmlSectionsSeppedByDrawings.length > 1) {
-      getDrawingsByBlogId(props.blogId).then((val: Excali[]) => {
-        console.log("got drawings: ", val);
-        setDrawings(val);
-      });
-    }
-  }, [props.blogId, props.htmlSectionsSeppedByDrawings.length]);
-
-  const handleMarkdownChange = async (val: string) => {
-    console.log("change: ", val);
-    setMarkdownEdit(val);
-  }
-
-  const { theme } = useTheme();
 
 
   if(editMode) {
@@ -112,6 +62,7 @@ function postprocess(html: string) {
           <div className="py-2 px-4 bg-zinc-800 text-zinc-200 cursor-pointer rounded" onClick={async () => {
             // generating the markdown preview on click
             if(marked) {
+              marked.setOptions({renderer, gfm: true, breaks: true});
               marked.use(markedKatex({ throwOnError: false }));
               const htmlString = await marked.parse(markdownEdit);
               const htmlPureString = DOMPurify.sanitize(htmlString);
@@ -145,35 +96,13 @@ function postprocess(html: string) {
   } else {
     return (
       <div>
-        {props.htmlSectionsSeppedByDrawings.map(
-          (el: string, curIndex: number) => {
-            return (
-              <div key={curIndex}>
-              {session.data?.user?.email == props.authorEmail ? <div className="flex justify-center items-center" > <div className="flex gap-4 cursor-pointer" onClick={() => setEditMode(true)}>
-                  <Edit2 />
-                  <div>
-                    Edit
-                  </div>
-                </div> </div> : null}
-                <div dangerouslySetInnerHTML={{ __html: el }}></div>
-                {drawings.length > 0 && curIndex < drawings.length ? (
-                  <div className="h-[50vh] w-full">
-                    <Excalidraw
-                      initialData={drawings[curIndex]}
-                      viewModeEnabled={true}
-                      theme={
-                        theme === "light" || theme === "dark" ? theme : "dark"
-                      }
-                    />
-                  </div>
-                ) : props.htmlSectionsSeppedByDrawings.length > 1 &&
-                  curIndex < drawings.length ? (
-                  <LoadingCard />
-                ) : null}
-              </div>
-            );
-          }
-        )}
+        {session.data?.user?.email == props.authorEmail ? <div className="flex justify-center items-center" > <div className="flex gap-4 cursor-pointer" onClick={() => setEditMode(true)}>
+            <Edit2 />
+            <div>
+              Edit
+            </div>
+          </div> </div> : null}
+          <div dangerouslySetInnerHTML={{ __html: props.htmlPureString }}></div>
       </div>
     );
   }

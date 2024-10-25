@@ -4,50 +4,38 @@ import Link from "next/link";
 import { ArrowLeft, Trash } from "lucide-react";
 import BlogViewClient from "./blog_view_client";
 import { Marked } from "marked";
+
 import { markedHighlight } from "marked-highlight";
+
 import hljs from "highlight.js";
+import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
+import python from 'highlight.js/lib/languages/python';
+import c from 'highlight.js/lib/languages/c';
+import go from 'highlight.js/lib/languages/go';
+import matlab from 'highlight.js/lib/languages/matlab';
+
 import { Session } from "next-auth";
 import markedKatex from "marked-katex-extension";
 import BlogLikeBar from "./blog-like-bar";
 import { getUser } from "@/lib/blog/blogpost";
 import DOMPurify from "isomorphic-dompurify";
 
-
-const sepDrawings = async (htmlString: string) => {
-  // parses latex in an html string
-  // and separates blog by images
-  var res = "";
-  var i = 0;
-  const htmlSectionsSeppedByDrawings: string[] = [];
-  while (i < htmlString.length - 1) {
-    if (
-      htmlString[i] == "!" &&
-      htmlString[i + 1] == "[" &&
-      htmlString[i + 2] == "["
-    ) {
-      htmlSectionsSeppedByDrawings.push(res);
-      res = "";
-      while (
-        !(htmlString[i] === "]" && htmlString[i + 1] === "]") &&
-        i < htmlString.length - 2
-      ) {
-        i++;
-      }
-      i++;
-    } else {
-      res += htmlString[i];
-    }
-    i++;
-  }
-  htmlSectionsSeppedByDrawings.push(res);
-  return htmlSectionsSeppedByDrawings;
-};
+import renderer from "@/lib/blog/renderer";
 
 const BlogView = async (props: {
   blog: Blog;
   passedId: string;
   authh: Session | null;
 }) => {
+
+  hljs.registerLanguage('javascript', javascript);
+  hljs.registerLanguage('typescript', typescript);
+  hljs.registerLanguage('python', python);
+  hljs.registerLanguage('c', c);
+  hljs.registerLanguage('go', go);
+  hljs.registerLanguage('matlab', matlab);
+
   const marked = new Marked(
     markedHighlight({
       langPrefix: "hljs language-",
@@ -58,10 +46,12 @@ const BlogView = async (props: {
     })
   );
 
+  marked.setOptions({renderer, gfm: true, breaks: true});
   marked.use(markedKatex({ throwOnError: false }));
+
   const htmlString = await marked.parse(props.blog.content);
   const htmlPureString = DOMPurify.sanitize(htmlString);
-  const htmlSectionsSeppedByDrawings = await sepDrawings(htmlPureString);
+  //const htmlSectionsSeppedByDrawings = await sepDrawings(htmlPureString);
   var alreadyLiked = null;
   if (props.authh?.user?.email) {
     alreadyLiked = (await getUser(props.authh.user.email))?.liked;
@@ -102,7 +92,7 @@ const BlogView = async (props: {
           blogId={props.blog.blogId}
           authorEmail={props.blog.email}
           markdownText={props.blog.content}
-          htmlSectionsSeppedByDrawings={htmlSectionsSeppedByDrawings}
+          htmlPureString={htmlPureString}
         />
         <BlogLikeBar blogId={props.blog.blogId} alreadyLiked={alreadyLiked} />
       </div>
