@@ -5,13 +5,18 @@ const renderer = new Renderer();
 renderer.heading = ( text: string, level: number, raw: string) => {
   const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
 
+  /*
+    * 
+    */
   return `
+          <hr style="visibility: hidden" id="checkpoint-${escapedText}">
+          <a class="anchor" href="#checkpoint-${escapedText}" >
           <h${level}>
-            <a name="${escapedText}" class="anchor" href="#${escapedText}">
-              <span class="header-link"></span>
-            </a>
             ${text}
-          </h${level}>`;
+          </h${level}>
+            </span>
+          </a>`
+          ;
 }
 
 renderer.image = (href: string, title: string, text: string) => {
