@@ -10,7 +10,7 @@ const Excalidraw = dynamic(
   }
 );
 
-const ExcalidrawPreview = async (props: {filename: string}) => {
+export const ExcalidrawPreview = async (props: {filename: string}) => {
   /*
     const drawings = await getDrawingsByBlogId(props.blogId);
     return (<div className="border rounded p-4 my-2 bg-gray-50">

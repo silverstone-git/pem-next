@@ -32,29 +32,30 @@ const submitDrawings = async (
   db: Db,
   email: string,
   blogId: string,
-  excalidrawings: Excali[]
+  excalidrawings: [string, Excali][]
 ) => {
   for (var i = 0; i < excalidrawings.length; i++) {
     await db.collection("drawings").insertOne({
       email: email,
       blogId: blogId,
-      drawing: excalidrawings[i],
+      filename: excalidrawings[i][0],
+      drawing: excalidrawings[i][1],
     });
   }
 };
 
 export const getDrawingsByBlogId: (
   blogId: string
-) => Promise<Excali[]> = async (blogId: string) => {
+) => Promise<[string, Excali][]> = async (blogId: string) => {
   const client = await clientPromise;
   try {
     const db = client.db("pem");
     const excalidrawingsCursor = db
       .collection("drawings")
       .find({ blogId: blogId });
-    const excalidrawings: Excali[] = [];
+    const excalidrawings: [string, Excali][] = [];
     for await (const doc of excalidrawingsCursor) {
-      excalidrawings.push(doc.drawing);
+      excalidrawings.push([doc.filename, doc.drawing]);
     }
     return excalidrawings;
   } catch (e) {
@@ -75,7 +76,7 @@ export const submitBlogToDB = async (
   user: { name: string; email: string },
   blogContent: string,
   blogCategory: string,
-  excalidrawings: Excali[]
+  excalidrawings: [string, Excali][]
 ) => {
   // auth and then send it to db
   //

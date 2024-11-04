@@ -1,7 +1,7 @@
 import { ExcalidrawPreview } from "./excalidraw-preview";
 import { JupyterPreview } from "./jupyter-preview";
 
-const FilePreview = (props: {filename: string}) => {
+export const FilePreview = (props: {filename: string}) => {
   const extension = props.filename.split('.').pop()?.toLowerCase();
   
   switch (extension) {

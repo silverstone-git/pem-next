@@ -14,7 +14,7 @@ import LoadingSpinner from "@/components/spinner";
 const SubmissionComponent = () => {
   const [fileStr, setFileStr] = useState("");
   const [category, setCategory] = useState("");
-  const initExcaliDrawings: Excali[] = [];
+  const initExcaliDrawings: [string, Excali][] = [];
   const [excalidrawings, setExcalidrawings] = useState(initExcaliDrawings);
   const [loadingSubmission, setLoadingSubmission] = useState(false);
   const session = useSession();
@@ -23,33 +23,6 @@ const SubmissionComponent = () => {
     name: session.data?.user?.name ?? "",
     email: session.data?.user?.email ?? "",
   };
-
-  /*
-  function blobToBase64(blob: Blob) {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          resolve(reader.result);
-        } else {
-          reject();
-        }
-      };
-      reader.readAsDataURL(blob);
-    });
-  }
-  const parseImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // parses image into blob string once input is filled in
-    if (e.target.files == null) return;
-    const fileList = Array.from(e.target.files);
-    if (fileList) {
-      const file = fileList[0];
-      const blob = new Blob([file], { type: "image/*" });
-      const blobStr: string = await blobToBase64(blob);
-      setImageStr(blobStr);
-    }
-  };
-  */
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files == null) return;
@@ -65,11 +38,14 @@ const SubmissionComponent = () => {
   };
 
   const getExcaliDrawingsFromFileList = async (fileList: File[]) => {
-    const excaliDrawingsLocal: Excali[] = [];
+    const excaliDrawingsLocal: [string, Excali][] = [];
     for (var i = 0; i < fileList.length; i++) {
       // looping through the .excalidraw.md files
       const reader = new FileReader();
       reader.readAsText(fileList[i]);
+      const filenamee = fileList[i].name;
+      const slicedName = filenamee.slice(0, filenamee.length - 3);
+      console.log("slicedName being pushed: ", slicedName);
 
       reader.onloadend = () => {
         if (reader.result == null) return;
@@ -91,7 +67,8 @@ const SubmissionComponent = () => {
           files: excaliObj.files,
           scrollToContent: true,
         };
-        excaliDrawingsLocal.push(excali);
+        excaliDrawingsLocal.push([slicedName, excali]);
+
       };
     }
     return excaliDrawingsLocal;
@@ -103,7 +80,7 @@ const SubmissionComponent = () => {
     if (e.target.files == null) return;
     const fileList = Array.from(e.target.files);
 
-    const excalidrawingsRes: Excali[] = await getExcaliDrawingsFromFileList(fileList);
+    const excalidrawingsRes: [string, Excali][] = await getExcaliDrawingsFromFileList(fileList);
     setExcalidrawings(excalidrawingsRes);
   };
 

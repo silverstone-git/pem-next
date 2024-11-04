@@ -22,6 +22,7 @@ import { getUser } from "@/lib/blog/blogpost";
 import DOMPurify from "isomorphic-dompurify";
 
 import renderer from "@/lib/blog/renderer";
+import { sepFiles } from "@/lib/utils";
 
 const BlogView = async (props: {
   blog: Blog;
@@ -51,7 +52,8 @@ const BlogView = async (props: {
 
   const htmlString = await marked.parse(props.blog.content);
   const htmlPureString = DOMPurify.sanitize(htmlString);
-  //const htmlSectionsSeppedByDrawings = await sepDrawings(htmlPureString);
+  const htmlSectionsSeppedByFiles = await sepFiles(htmlPureString);
+
   var alreadyLiked = null;
   if (props.authh?.user?.email) {
     alreadyLiked = (await getUser(props.authh.user.email))?.liked;
@@ -92,7 +94,7 @@ const BlogView = async (props: {
           blogId={props.blog.blogId}
           authorEmail={props.blog.email}
           markdownText={props.blog.content}
-          htmlPureString={htmlPureString}
+          htmlSectionsSeppedByFiles={htmlSectionsSeppedByFiles}
         />
         <BlogLikeBar blogId={props.blog.blogId} alreadyLiked={alreadyLiked} />
       </div>
