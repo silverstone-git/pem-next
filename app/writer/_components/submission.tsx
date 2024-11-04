@@ -132,6 +132,13 @@ const SubmissionComponent = () => {
             <label htmlFor="file-picker-blog-markdown">
               Choose a Blog File (.md)
             </label>
+            <div className="dark:bg-black bg-zinc-400 rounded py-6 px-12">
+                <ol className="list-decimal">
+                  <li>You may use Github Flavored Markdown</li>
+                  <li>Make the first line an H1 title</li>
+                  <li>Append (Notebook) to title like that if its a converted .md form an .ipynb</li>
+                </ol>
+            </div>
             <Input
               id="file-picker-blog-markdown"
               onChange={handleFile}
