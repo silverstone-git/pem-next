@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/mongodb-adapter": "^2.0.9",
+    "@auth/mongodb-adapter": "^3.7.3",
     "@excalidraw/excalidraw": "^0.17.2",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-dialog": "^1.0.5",
@@ -29,7 +29,7 @@
     "marked-highlight": "^2.1.0",
     "marked-katex-extension": "^4.0.5",
     "mongodb": "^6.3.0",
-    "next": "14.0.4",
+    "next": "^14.2.16",
     "next-auth": "^5.0.0-beta.4",
     "next-themes": "^0.2.1",
     "nodemailer": "^6.9.7",

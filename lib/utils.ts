@@ -27,7 +27,7 @@ export const sepFiles = async (htmlString: string) => {
         i++;
       }
 
-      const placeholderText = `<div data-filename="${filename.slice(3)}"></div>`;
+      const placeholderText = `<div data-filename="${filename.slice(3)}" class="file-placeholder"></div>`;
       htmlSectionsSeppedByFiles.push(placeholderText);
       i++;
     } else {

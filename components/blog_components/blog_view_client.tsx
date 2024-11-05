@@ -14,7 +14,36 @@ import hljs from "highlight.js";
 import { Edit2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import renderer from "@/lib/blog/renderer";
+import { Skeleton } from "../ui/skeleton";
+import LoadingSpinner from "../spinner";
+const Excalidraw = dynamic(
+  async () => (await import("@excalidraw/excalidraw")).Excalidraw,
+  {
+    ssr: false,
+  }
+);
 
+const ExcalidrawFromDataDiv = (props: {secc: string, drawings: any, theme?: string}) => {
+
+  const match = props.secc.match(/data-filename="([^"]+)"/);
+  const filename = match ? match[1] : null;
+  if(filename && filename in props.drawings) {
+    return <div className="h-[50vh] w-full"> 
+      <Excalidraw
+        initialData={props.drawings[filename]}
+        viewModeEnabled={true}
+        theme={
+          props.theme === "light" || props.theme === "dark" ? props.theme : "dark"
+        }
+      />
+    </div> 
+  } else {
+    //console.log("filename not found in drawings obj or div")
+    //console.log("filename", filename);
+    //console.log(secc);
+    return <div className="h-36 w-full flex justify-center items-center"><LoadingSpinner /></div>;
+  }
+}
 
 const BlogViewClient = (props: {
   blogId: string;
@@ -29,22 +58,19 @@ const BlogViewClient = (props: {
   const [htmlStringEditPreview, setHTMLStringEditPreview] = useState("");
   const [markdownEdit, setMarkdownEdit] = useState(props.markdownText);
 
-  const Excalidraw = dynamic(
-    async () => (await import("@excalidraw/excalidraw")).Excalidraw,
-    {
-      ssr: false,
-    }
-  );
 
+ 
   useEffect(() => {
     if (props.htmlSectionsSeppedByFiles.length > 1) {
       getDrawingsByBlogId(props.blogId).then((val: [string, Excali][]) => {
-        console.log("got drawings: ", val);
+        //console.log("got drawings: ", val);
         const filenameExcaliObject = Object.fromEntries(val);
         setDrawings((prevState: any) => ({
           ...prevState,
           ...filenameExcaliObject
         }));
+        console.log("set the drwaings successfully");
+        console.log(filenameExcaliObject);
       });
       // make other calls for other files later. add them to respective states and
       // render it in the file preview using, say, mp3files[filename] like we did for excalidraw
@@ -125,36 +151,12 @@ const BlogViewClient = (props: {
           </div> </div> : null}
           <div>
             {props.htmlSectionsSeppedByFiles.map((secc: string, curIndex: number) => {
-              if(secc.slice(0, 19) == "<div data-filename=") {
-                console.log("found file block1!!!!!!");
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(secc, 'text/html');
-                const div = doc.querySelector('div'); // Select the <div> element
-                if(div) {
-                  const filename = div.getAttribute('data-filename');
-                  if(filename && filename in drawings) {
-                    console.log("filename", filename);
-                    return <Excalidraw
-                      initialData={drawings[filename]}
-                      viewModeEnabled={true}
-                      theme={
-                        theme === "light" || theme === "dark" ? theme : "dark"
-                      }
-                    />
-                  } else {
-                    console.log("filename not found in drawings obj or div")
-                    console.log("filename", filename);
-                    console.log(secc);
-                    return 'FILE_PREVIEW_ERROR';
-                  }
-                } else {
-                  console.log("div not found in the placeholder text from server")
-                  console.log(secc)
-                  return 'FILE_PREVIEW_ERROR';
+              return <div key={curIndex}>
+                {secc.slice(0, 19) == "<div data-filename=" ?
+                  <ExcalidrawFromDataDiv secc={secc} drawings={drawings} theme={theme} />
+                  : <div dangerouslySetInnerHTML={{ __html: secc }}></div>
                 }
-              } else {
-                return <div dangerouslySetInnerHTML={{ __html: secc }}></div>
-              }
+              </div>
             })}
           </div>
       </div>
