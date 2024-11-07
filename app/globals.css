@@ -43,7 +43,7 @@
 
 
     .blog-view-div p > a {
-        @apply text-xl mt-2 mb-3 px-4 py-2 rounded-md bg-pink-900 text-pink-100 hover:bg-pink-700 dark:bg-pink-200 dark:text-pink-800 hover:dark:bg-pink-400;
+        @apply text-xl mt-2 mb-3 px-4 py-2 rounded-md bg-zinc-100 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-200 hover:dark:bg-zinc-400;
     }
 
     .blog-view-div li {
@@ -101,8 +101,18 @@
     }
 }
 
-/*
-.blog-view-div p {
-  color: green;
+@layer components {
+    .code-notebook {
+      position: relative;
+      padding-left: 90px !important;
+      @apply dark:bg-gradient-to-r dark:from-black dark:from-[85px] dark:via-transparent dark:via-[85px];
+      @apply bg-gradient-to-r from-zinc-100 from-[85px] via-transparent via-[85px];
+    }
+    .code-notebook::before {
+      content: "In [n]: ";
+      left: 10px;
+      position: absolute;
+      @apply text-orange-700 dark:text-orange-300;
+    }
 }
-*/
+

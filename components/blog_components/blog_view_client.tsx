@@ -16,12 +16,40 @@ import { useSession } from "next-auth/react";
 import renderer from "@/lib/blog/renderer";
 import { Skeleton } from "../ui/skeleton";
 import LoadingSpinner from "../spinner";
+import { getTitleFromContent } from "@/lib/blog/blog_client";
 const Excalidraw = dynamic(
   async () => (await import("@excalidraw/excalidraw")).Excalidraw,
   {
     ssr: false,
   }
 );
+
+const BlogInnerContent = (props: {secc: string, title: string}) => {
+  if(props.title.includes('otebook')) {
+    let counter = 1;
+    let modifiedHtmlString = props.secc.replace(/<code([^>]*)>/g, (match, p1) => {
+      let newClass = `code-notebook code-count-${counter}`;
+      
+      // Increment the counter for the next <code> element
+      counter++;
+
+      // Check if there are existing classes
+      if (p1.includes('class="')) {
+          // If there are existing classes, append the new classes to them
+          return `<code${p1.replace(/class="([^"]*)"/, (m: any, classes: any) => `class="${classes} ${newClass}"`)}>`;
+      } else {
+          // If there are no existing classes, just add the new classes
+          return `<code class="${newClass}">`;
+      }
+    });
+
+    console.log("an extra class is added as its a notebook");
+    return <div dangerouslySetInnerHTML={{ __html: modifiedHtmlString }}></div>
+  }
+  console.log("NO extra classes are added as its not a notebook");
+  //console.log(props.title)
+  return <div dangerouslySetInnerHTML={{ __html: props.secc }}></div>
+}
 
 const ExcalidrawFromDataDiv = (props: {secc: string, drawings: any, theme?: string}) => {
 
@@ -69,8 +97,8 @@ const BlogViewClient = (props: {
           ...prevState,
           ...filenameExcaliObject
         }));
-        console.log("set the drwaings successfully");
-        console.log(filenameExcaliObject);
+        //console.log("set the drwaings successfully");
+        //console.log(filenameExcaliObject);
       });
       // make other calls for other files later. add them to respective states and
       // render it in the file preview using, say, mp3files[filename] like we did for excalidraw
@@ -78,7 +106,7 @@ const BlogViewClient = (props: {
   }, [props.blogId, props.htmlSectionsSeppedByFiles.length]);
 
   const handleMarkdownChange = async (val: string) => {
-    console.log("change: ", val);
+    //console.log("change: ", val);
     setMarkdownEdit(val);
   }
 
@@ -117,7 +145,7 @@ const BlogViewClient = (props: {
 
               setHTMLStringEditPreview(htmlPureString);
             } else {
-              console.log("marked is: ", marked);
+              //console.log("marked is: ", marked);
             }
           }}>Generate Preview</div>
           <div dangerouslySetInnerHTML={{__html: htmlStringEditPreview}} ></div>
@@ -154,7 +182,7 @@ const BlogViewClient = (props: {
               return <div key={curIndex}>
                 {secc.slice(0, 19) == "<div data-filename=" ?
                   <ExcalidrawFromDataDiv secc={secc} drawings={drawings} theme={theme} />
-                  : <div dangerouslySetInnerHTML={{ __html: secc }}></div>
+                  : <BlogInnerContent secc={secc} title={getTitleFromContent(props.markdownText)} />
                 }
               </div>
             })}
