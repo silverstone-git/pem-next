@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { LogoutAction } from "./auth-actions";
 import LoginButtonHeader from "./login-button-header";
+import SearchBar from "./blog_components/blog-search";
 
 const LogoutButton = async () => {
   return (
@@ -27,6 +28,7 @@ const HeaderBar = async () => {
           Please Explain Me!
         </Link>
         <div className="flex gap-4 items-center">
+          <SearchBar />
           <div>
             <ModeToggle></ModeToggle>
           </div>
