@@ -1,75 +1,124 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { onSearch } from "@/lib/search"; // assumed to return Promise<Blog[]>
+import { Blog } from "@/lib/models";
+import BlogCardLanding from "./blog_card";
+import BlogCardSearch from "./blog_card_client";
 
 interface SearchBarProps {
-  onSearch?: (query: string) => void;
   placeholder?: string;
   className?: string;
 }
 
 export default function SearchBar({
-  onSearch,
   placeholder = "Search...",
   className = "",
 }: SearchBarProps) {
   const [query, setQuery] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [results, setResults] = useState<Blog[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim() && onSearch) {
-      onSearch(query.trim());
+    if (query.trim()) {
+      const res = await onSearch(query.trim());
+      setResults(res || []);
     }
   };
 
   const handleClear = () => {
     setQuery("");
-    if (onSearch) {
-      onSearch("");
-    }
+    setResults([]);
   };
 
+  // Close on Esc key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsExpanded(false);
+        handleClear();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <form onSubmit={handleSubmit} className={`relative ${className}`}>
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-        <Input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          placeholder={placeholder}
-          className={`
-            pl-10 pr-10 h-12 w-64 rounded-full
-            bg-white dark:bg-zinc-800
-            border-zinc-300 dark:border-zinc-600
-            text-zinc-900 dark:text-zinc-100
-            placeholder:text-zinc-500 dark:placeholder:text-zinc-400
-            focus:border-pink-500 dark:focus:border-pink-400
-            focus:ring-pink-500 dark:focus:ring-pink-400
-            transition-colors duration-200
-            ${isFocused ? "ring-2 ring-pink-500/20 dark:ring-pink-400/20" : ""}
-          `}
+    <>
+      {/* Dark overlay */}
+      {isExpanded && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => {
+            setIsExpanded(false);
+            handleClear();
+          }}
         />
-        {query && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={handleClear}
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-          >
-            <X className="h-3 w-3" />
-          </Button>
+      )}
+
+      {/* Search Bar */}
+      <form
+        onSubmit={handleSubmit}
+        className={`z-50 fixed ${
+          isExpanded
+            ? "inset-x-4 top-20 sm:top-32"
+            : "bottom-4 right-4 w-fit sm:static"
+        } transition-all duration-300 ease-in-out ${
+          isExpanded ? "max-w-xl mx-auto" : ""
+        } ${className}`}
+      >
+        <div
+          className={`relative flex items-center ${
+            isExpanded
+              ? "w-full rounded-2xl bg-white dark:bg-zinc-900 shadow-lg p-4"
+              : "bg-white dark:bg-zinc-800 rounded-full px-4 py-2 shadow"
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(true);
+          }}
+        >
+          <Search className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+
+          <Input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={placeholder}
+            className={`bg-white dark:bg-zinc-800 ml-3 border-none focus:outline-none focus:ring-0 text-sm sm:text-base flex-1 ${
+              !isExpanded ? "w-24 sm:w-40" : "w-full"
+            }`}
+            autoFocus={isExpanded}
+          />
+
+          {query && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleClear}
+              className="ml-2"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {/* Results
+          getTitleFromContent(res.content)
+          */}
+        {isExpanded && results.length > 0 && (
+          <div className="mt-3 bg-white dark:bg-zinc-900 rounded-xl p-4 shadow max-h-60 overflow-auto">
+            {results.map((blog) => (
+              <BlogCardSearch key={blog.blogId} blog={blog} />
+            ))}
+          </div>
         )}
-      </div>
-    </form>
+      </form>
+    </>
   );
 }
