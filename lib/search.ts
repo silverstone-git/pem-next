@@ -3,11 +3,13 @@
 import clientPromise from "./mongodb";
 import { ObjectId } from "mongodb";
 import { GoogleGenAI } from "@google/genai";
-import { Blog } from "./models";
+import { Blog, parseObjToBlog } from "./models";
 
 const apiKey = process.env.GOOGLE_API_KEY;
 
-export const onSearch = async (query: string) => {
+export const onSearch: (query: string) => Promise<Blog[]> = async (
+  query: string,
+) => {
   console.log("queried: ", query);
 
   if (!apiKey) {
@@ -91,12 +93,12 @@ export const onSearch = async (query: string) => {
       })
       .filter(Boolean); // Filter out undefined values in case a blog is not found
 
-    const sortedBlogsArr = sortedBlogs.map((blog) => {
-      return { ...blog, blogId: blog!._id };
+    const sortedBlogsArr: Blog[] = sortedBlogs.map((blog) => {
+      return parseObjToBlog({ ...blog, blogId: blog!._id });
     });
     return sortedBlogsArr;
   } catch (e) {
     console.error(e);
-    return []; // Or handle the error as appropriate for your application
+    return [];
   }
 };
