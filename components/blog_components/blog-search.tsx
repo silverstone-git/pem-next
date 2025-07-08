@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { onSearch } from "@/lib/search"; // assumed to return Promise<Blog[]>
 import { Blog } from "@/lib/models";
-import BlogCardLanding from "./blog_card";
 import BlogCardSearch from "./blog_card_client";
+import LoadingCard from "@/components/loading_card";
 
 interface SearchBarProps {
   placeholder?: string;
@@ -21,18 +21,25 @@ export default function SearchBar({
   const [query, setQuery] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
   const [results, setResults] = useState<Blog[]>([]);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      const res = await onSearch(query.trim());
-      setResults(res || []);
+      setIsLoading(true); // Set loading to true before search
+      try {
+        const res = await onSearch(query.trim());
+        setResults(res || []);
+      } finally {
+        setIsLoading(false); // Set loading to false after search completes
+      }
     }
   };
 
   const handleClear = () => {
     setQuery("");
     setResults([]);
+    setIsLoading(false);
   };
 
   // Close on Esc key
@@ -111,8 +118,16 @@ export default function SearchBar({
         {/* Results
           getTitleFromContent(res.content)
           */}
+        {isExpanded &&
+          isLoading &&
+          results.length === 0 && ( // Render LoadingCard when loading and no results
+            <div className="mt-3 bg-white dark:bg-zinc-900 rounded-xl p-4 shadow max-h-60 overflow-auto">
+              <LoadingCard />
+            </div>
+          )}
+
         {isExpanded && results.length > 0 && (
-          <div className="mt-3 bg-white dark:bg-zinc-900 rounded-xl p-4 shadow max-h-60 overflow-auto">
+          <div className="mt-3 bg-white dark:bg-zinc-900 rounded-xl p-4 shadow max-h-60 overflow-auto mb-28">
             {results.map((blog) => (
               <BlogCardSearch key={blog.blogId} blog={blog} />
             ))}

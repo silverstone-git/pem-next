@@ -7,6 +7,8 @@ const BlogCardSearch = (props: { blog: Blog }) => {
   //await new Promise((resolve) => setTimeout(resolve, 3000));
   var titleString: string = getTitleFromContent(props.blog.content);
 
+  console.log("got blog:", props.blog);
+
   return (
     <div className="flex flex-col">
       <div className="text-2xl font-bold mb-4">{titleString}</div>
