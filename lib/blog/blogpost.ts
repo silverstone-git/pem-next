@@ -20,19 +20,21 @@ import { auth } from "@/app/auth";
 
 const writers: string[] = ["silverstone965@gmail.com"];
 
-export const isNotWriter = (inp: string) => {
-  if (writers.find((val: string, index: number) => val === inp)) {
-    return false;
-  } else {
-    return true;
-  }
+export const isNotWriter = async (inp: string) => {
+  const session = await auth();
+  console.log(session?.user?.email);
+  return (
+    process.env
+      .EMAILS_EDITORS!.split(";")
+      .findIndex((val) => session?.user?.email == val) == -1
+  );
 };
 
 const submitDrawings = async (
   db: Db,
   email: string,
   blogId: string,
-  excalidrawings: [string, Excali][]
+  excalidrawings: [string, Excali][],
 ) => {
   for (var i = 0; i < excalidrawings.length; i++) {
     await db.collection("drawings").insertOne({
@@ -45,7 +47,7 @@ const submitDrawings = async (
 };
 
 export const getDrawingsByBlogId: (
-  blogId: string
+  blogId: string,
 ) => Promise<[string, Excali][]> = async (blogId: string) => {
   const client = await clientPromise;
   try {
@@ -66,28 +68,30 @@ export const getDrawingsByBlogId: (
   }
 };
 
-
 async function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
 
 export const submitBlogToDB = async (
   user: { name: string; email: string },
   blogContent: string,
   blogCategory: string,
-  excalidrawings: [string, Excali][]
+  excalidrawings: [string, Excali][],
 ) => {
   // auth and then send it to db
   //
   //
   /*
-  console.log("someone cooked here")
   await delay(5000);
   return 0;
   */
+  console.log("someone cooked here");
   const session = await auth();
-  if (session?.user?.email == null || isNotWriter(session?.user?.email)) {
+  console.log(session?.user?.email);
+  const notWriter = await isNotWriter(session?.user?.email ?? "");
+  console.log(notWriter);
+
+  if (session?.user?.email == null || notWriter) {
     console.log("______ 403 ______");
     return;
   }
@@ -114,45 +118,43 @@ export const submitBlogToDB = async (
   }
 };
 
-export const submitEditUser =  async (blogId: string, markdown: string): Promise<{statusCode: number}> => {
-
+export const submitEditUser = async (
+  blogId: string,
+  markdown: string,
+): Promise<{ statusCode: number }> => {
   // check if user is the author of the blogId
 
   const session = await auth();
   const email = session?.user?.email;
-  if(!email) {
+  if (!email) {
     console.log("not gonna happen");
-    return {statusCode: 403};
+    return { statusCode: 403 };
   }
   const client = await clientPromise;
   try {
-    console.log("     okkkk   updatingzz")
+    console.log("     okkkk   updatingzz");
     const db = client.db("pem");
     const filter = { _id: new ObjectId(blogId), email };
     const res = await db
       .collection("blogs")
-      .findOneAndUpdate(
-        filter,
-        { $set: { content: markdown } }
-    );
-    if(!res) {
+      .findOneAndUpdate(filter, { $set: { content: markdown } });
+    if (!res) {
       console.log("there was no such doc");
-      return {statusCode: 404};
+      return { statusCode: 404 };
     }
     console.log("update done");
     console.log("res: ", res);
-    return {statusCode: 204};
+    return { statusCode: 204 };
   } catch (e) {
     console.log("error is: ", e);
-    return {statusCode: 500};
+    return { statusCode: 500 };
   } finally {
     //client.close();
   }
-
-}
+};
 
 export const getLatestBlogs: (
-  lastBlogId: string | null
+  lastBlogId: string | null,
 ) => Promise<Blog[]> = async (lastBlogId: string | null = "0") => {
   // fetches latest 5 blogs from mongo
   const client = await clientPromise;
@@ -211,7 +213,7 @@ export const getBlogById = async (blogId: string, session: Session | null) => {
         .collection("blogs")
         .findOneAndUpdate(
           { _id: new ObjectId(blogId) },
-          { $inc: { views: 1 } }
+          { $inc: { views: 1 } },
         );
       if (res) {
         // since the old doc is fetched, not the updated one, updating the local copy as well ...
@@ -277,10 +279,10 @@ export const getUser = async (email: string) => {
 
 export const getLatestComments: (
   blogId: string,
-  lastCommentId: string | null
+  lastCommentId: string | null,
 ) => Promise<BlogComment[]> = async (
   blogId: string,
-  lastCommentId: string | null
+  lastCommentId: string | null,
 ) => {
   const client = await clientPromise;
   const db = client.db("pem");
